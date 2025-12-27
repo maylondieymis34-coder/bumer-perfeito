@@ -11,150 +11,154 @@
             --bg: #F8F9FB;
         }
 
-        /* Forçar visual de celular no computador */
+        /* Ajuste para centralizar o app como um celular na tela do PC */
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: 'Segoe UI', sans-serif; background: #333; 
+            font-family: 'Segoe UI', sans-serif; background: #222; 
             display: flex; justify-content: center; align-items: center;
         }
 
-        #app-container {
-            width: 100%; max-width: 450px; height: 100%; 
-            max-height: 900px; background: var(--bg);
-            position: relative; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        #app-wrapper {
+            width: 100%; max-width: 400px; height: 100%; 
+            max-height: 850px; background: var(--bg);
+            position: relative; overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            border-radius: 10px;
         }
 
         .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; }
         .active { display: flex; }
 
-        /* Estilo da Logo e Título */
-        .logo-box { padding: 40px 0 20px; text-align: center; }
-        .logo-img { height: 80px; margin-bottom: 10px; }
-        .brand-name { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: #333; margin: 0; }
+        /* LOGO DESENHADA VIA CÓDIGO (Nunca some) */
+        .logo-area { padding: 40px 0 10px; text-align: center; }
+        .bumer-logo-svg { width: 70px; height: 70px; margin-bottom: 5px; }
 
-        /* Tela de Cadastro */
-        .auth-content { padding: 0 30px; text-align: center; }
-        .photo-picker {
-            width: 100px; height: 100px; border-radius: 50%; border: 2px dashed var(--primary);
-            margin: 20px auto; display: flex; align-items: center; justify-content: center;
-            background-size: cover; background-position: center; cursor: pointer; color: #999;
+        /* Cadastro */
+        .content { padding: 0 25px; text-align: center; }
+        .photo-circle {
+            width: 100px; height: 100px; border-radius: 50%; 
+            border: 2px dashed var(--primary); margin: 15px auto;
+            display: flex; align-items: center; justify-content: center;
+            background-size: cover; background-position: center; cursor: pointer;
         }
 
         input {
-            width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd;
-            border-radius: 25px; box-sizing: border-box; font-size: 16px; outline: none;
+            width: 100%; padding: 12px 20px; margin: 8px 0; 
+            border: 1px solid #eee; border-radius: 30px; 
+            box-sizing: border-box; font-size: 15px; background: white;
         }
 
         .btn-gmail {
-            background: white; border: 1px solid #ddd; padding: 12px; border-radius: 30px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; margin-top: 20px; cursor: pointer; font-weight: 500;
+            background: white; border: 1px solid #ddd; padding: 12px; 
+            border-radius: 30px; display: flex; align-items: center; 
+            justify-content: center; gap: 10px; width: 100%; 
+            margin-top: 20px; cursor: pointer; font-weight: 500;
         }
 
-        /* Radar Grid (Igual à imagem enviada) */
-        .header-bar { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
-        .radar-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; 
-            overflow-y: auto; flex: 1; padding-bottom: 80px; 
+        /* Radar (Grid de Fotos) */
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold; }
+        .grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; 
+            padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 90px; 
         }
-        .profile-card { 
-            background: white; border-radius: 20px; overflow: hidden; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative;
+        .card { 
+            background: white; border-radius: 18px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;
         }
-        .profile-img { width: 100%; height: 150px; object-fit: cover; }
-        .profile-info { padding: 10px; font-size: 13px; line-height: 1.4; }
+        .card img { width: 100%; height: 140px; object-fit: cover; }
+        .card-info { padding: 10px; font-size: 13px; font-weight: bold; }
         
-        /* Botão Bumerangue flutuante */
-        .bumer-icon {
-            position: absolute; right: 8px; bottom: 40px;
-            background: var(--gradient); border-radius: 50%; width: 32px; height: 32px;
+        .bumer-float {
+            position: absolute; right: 8px; bottom: 38px;
+            background: var(--gradient); border-radius: 50%; width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
-            border: 2px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); color: white;
         }
 
-        /* Nav inferior */
-        .bottom-nav {
+        .nav {
             position: absolute; bottom: 0; width: 100%; background: white;
-            display: flex; justify-content: space-around; padding: 15px 0;
-            border-top: 1px solid #eee;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #f0f0f0;
         }
-        .nav-item { font-size: 22px; color: #ccc; cursor: pointer; background: none; border: none; }
-        .nav-active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div id="auth-screen" class="screen active">
-        <div class="logo-box">
-            <img src="https://i.ibb.co/vzPRYmY/logo-bumer.png" class="logo-img">
-            <h1 class="brand-name">BUMER</h1>
+<div id="app-wrapper">
+    <div id="login" class="screen active">
+        <div class="logo-area">
+            <svg class="bumer-logo-svg" viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FF8C42" />
+                        <stop offset="100%" style="stop-color:#9D4EDD" />
+                    </linearGradient>
+                </defs>
+                <path d="M20,50 Q10,20 40,15 L80,30 Q95,40 85,70 L50,85 Q35,90 25,75 Z" fill="url(#g)" />
+                <circle cx="55" cy="45" r="12" fill="white" />
+                <circle cx="55" cy="45" r="5" fill="#FF4D8F" />
+            </svg>
+            <div style="font-weight: 900; font-size: 22px;">BUMER</div>
         </div>
         
-        <div class="auth-content">
-            <p style="font-weight: bold; color: #555;">Criar Conta</p>
-            <div class="photo-picker" id="preview" onclick="document.getElementById('file').click()">
-                <span id="cam-icon">📷</span>
+        <div class="content">
+            <p style="font-size: 14px; color: #666;">Criar Conta</p>
+            <div class="photo-circle" id="pic" onclick="document.getElementById('f').click()">
+                <span id="txt">📷</span>
             </div>
-            <input type="file" id="file" hidden onchange="handleImg(event)">
+            <input type="file" id="f" hidden onchange="up(event)">
             
-            <input type="text" id="name" placeholder="Nome Completo">
-            <input type="number" id="age" placeholder="Idade">
+            <input type="text" placeholder="Nome Completo">
+            <input type="number" placeholder="Idade">
             
-            <button class="btn-gmail" onclick="showScreen('radar-screen')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Entrar com Gmail
+            <button class="btn-gmail" onclick="show('main')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="16"> Entrar com Gmail
             </button>
         </div>
     </div>
 
-    <div id="radar-screen" class="screen">
-        <div class="header-bar">
-            <img src="https://i.ibb.co/vzPRYmY/logo-bumer.png" style="height: 35px;">
+    <div id="main" class="screen">
+        <div class="header">BUMER</div>
+        <div class="grid" id="g-items"></div>
+        <div class="nav">
+            <button onclick="show('main')" style="border:0; background:0; font-size:22px; color:var(--primary)">🧭</button>
+            <button style="border:0; background:0; font-size:22px; color:#ccc">💬</button>
+            <button style="border:0; background:0; font-size:22px; color:#ccc">📦</button>
         </div>
-        <div class="radar-grid" id="grid"></div>
-        <nav class="bottom-nav">
-            <button class="nav-item nav-active">🧭</button>
-            <button class="nav-item">💬</button>
-            <button class="nav-item">📦</button>
-        </nav>
     </div>
 </div>
 
 <script>
-    function showScreen(id) {
+    function show(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(id === 'radar-screen') renderGrid();
+        if(id === 'main') load();
     }
 
-    function handleImg(e) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            document.getElementById('preview').style.backgroundImage = `url(${reader.result})`;
-            document.getElementById('cam-icon').style.display = 'none';
+    function up(e) {
+        const r = new FileReader();
+        r.onload = () => {
+            document.getElementById('pic').style.backgroundImage = `url(${r.result})`;
+            document.getElementById('txt').style.display = 'none';
         }
-        reader.readAsDataURL(e.target.files[0]);
+        r.readAsDataURL(e.target.files[0]);
     }
 
-    function renderGrid() {
+    function load() {
         const users = [
-            {n: 'Surf Name Gams', a: 22, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'},
-            {n: 'Bont Naos', a: 25, img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'},
-            {n: 'MerSilo', a: 21, img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400'},
-            {n: 'Manes Woms', a: 24, img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400'}
+            {n: 'Mariana', a: 24, img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
+            {n: 'Ricardo', a: 28, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
+            {n: 'Ana', a: 22, img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
+            {n: 'Pedro', a: 30, img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
         ];
-        document.getElementById('grid').innerHTML = users.map(u => `
-            <div class="profile-card">
-                <img src="${u.img}" class="profile-img">
-                <div class="bumer-icon">🪃</div>
-                <div class="profile-info">
-                    <strong>${u.n}, ${u.a}</strong>
-                    <div style="font-size: 10px; margin-top: 5px;">🟢 🟡 🔵</div>
-                </div>
+        document.getElementById('g-items').innerHTML = users.map(u => `
+            <div class="card">
+                <img src="${u.img}">
+                <div class="bumer-float">🪃</div>
+                <div class="card-info">${u.n}, ${u.a}</div>
             </div>
         `).join('');
     }
 </script>
-
 </body>
 </html>
