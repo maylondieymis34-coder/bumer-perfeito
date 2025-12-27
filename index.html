@@ -2,123 +2,110 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bumer App</title>
     <style>
-        :root {
-            --primary: #FF4D8F;
-            --gradient: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD);
-            --bg: #F8F9FB;
-        }
-
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: #1a1a1a; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-
-        #app-container { width: 100%; max-width: 414px; height: 100%; max-height: 896px; background: var(--bg); position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; background: var(--bg); }
-        .active { display: flex !important; z-index: 5; }
-
-        /* Header */
-        .header-app { background: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; display: flex; justify-content:建设; align-items: center; }
-        .brand { font-size: 20px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 auto; }
-
-        /* Radar Grid */
-        .radar-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
-        .card-profile { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
-        .card-profile img { width: 100%; height: 150px; object-fit: cover; }
-        .profile-name { padding: 10px; font-weight: bold; font-size: 14px; }
-        
-        /* Chat View */
-        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; font-size: 14px; line-height: 1.4; }
-        .received { background: white; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-
-        /* Input de Mensagem */
-        .input-area { padding: 10px; background: white; display: flex; gap: 8px; border-top: 1px solid #eee; }
-        .input-area input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
-        .btn-send { background: var(--gradient); border: none; color: white; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; }
-
-        /* Menu Inferior */
-        .nav-bar { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 10; }
-        .nav-btn { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; transition: 0.3s; }
-        .active-btn { color: var(--primary); }
-
-        /* Cadastro */
-        .form-box { padding: 40px 30px; text-align: center; }
-        .btn-enter { background: var(--gradient); color: white; border: none; padding: 15px; width: 100%; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        :root { --primary: #FF4D8F; --gradient: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); --bg: #F8F9FB; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: sans-serif; background: #1a1a1a; display: flex; justify-content: center; }
+        #app { width: 100%; max-width: 400px; height: 100%; background: var(--bg); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        .screen { display: none; width: 100%; height: 100%; flex-direction: column; }
+        .active { display: flex !important; }
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold; color: var(--primary); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; position: relative; }
+        .card img { width: 100%; height: 130px; object-fit: cover; }
+        .nav { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
+        .btn-nav { border: 0; background: 0; font-size: 22px; cursor: pointer; color: #ccc; }
+        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 10px; max-width: 70%; font-size: 14px; }
+        .sent { background: var(--primary); color: white; align-self: flex-end; }
+        .received { background: #eee; align-self: flex-start; }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div id="scr-auth" class="screen active">
-        <div class="form-box">
-            <h1 class="brand" style="font-size: 40px;">BUMER</h1>
-            <p>Conecte-se e volte sempre</p>
-            <input type="text" id="user-name" placeholder="Seu Nome Completo" style="width:100%; padding:15px; border-radius:30px; border:1px solid #ddd; margin-top:30px; box-sizing:border-box;">
-            <button class="btn-enter" onclick="goRadar()">ENTRAR NO RADAR</button>
-        </div>
+<div id="app">
+    <div id="scr-auth" class="screen active" style="padding: 50px 20px; text-align: center;">
+        <h1 style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 40px;">BUMER</h1>
+        <input type="text" id="uname" placeholder="Seu Nome" style="width: 80%; padding: 15px; border-radius: 20px; border: 1px solid #ddd;">
+        <button onclick="irRadar()" style="margin-top: 20px; padding: 15px 40px; border-radius: 30px; border: 0; background: var(--gradient); color: white; font-weight: bold;">ENTRAR</button>
     </div>
 
     <div id="scr-radar" class="screen">
-        <div class="header-app"><span class="brand">RADAR BUMER</span></div>
-        <div class="radar-list" id="grid-list"></div>
-        <div class="nav-bar">
-            <button class="nav-btn active-btn" onclick="show('scr-radar')">🧭</button>
-            <button class="nav-btn" onclick="show('scr-chats-list')">💬</button>
-            <button class="nav-btn" onclick="show('scr-vault')">📦</button>
+        <div class="header">RADAR BUMER</div>
+        <div class="grid" id="grid"></div>
+        <div class="nav">
+            <button class="btn-nav" style="color:var(--primary)" onclick="mudar('scr-radar')">🧭</button>
+            <button class="btn-nav" onclick="mudar('scr-bau')">📦</button>
         </div>
     </div>
 
     <div id="scr-chat" class="screen">
-        <div class="header-app">
-            <button onclick="show('scr-radar')" style="border:0; background:0; font-size:20px; cursor:pointer;">←</button>
-            <span id="chat-nm" style="margin-left:10px; flex:1; text-align:left;">Nome</span>
+        <div class="header">
+            <button onclick="mudar('scr-radar')" style="float: left; border: 0; background: 0;">←</button>
+            <span id="cname">Chat</span>
         </div>
-        <div class="chat-msgs" id="msg-box"></div>
-        <div class="input-area">
-            <input type="text" id="m-input" placeholder="Digite uma mensagem...">
-            <button class="btn-send" onclick="sendMsg()">✈️</button>
+        <div class="chat-msgs" id="mbox"></div>
+        <div style="padding: 10px; display: flex; gap: 5px; background: white;">
+            <input type="text" id="minput" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+            <button onclick="enviar()" style="background: var(--primary); color: white; border: 0; border-radius: 50%; width: 40px;">✈️</button>
         </div>
     </div>
 
-    <div id="scr-vault" class="screen">
-        <div class="header-app"><span class="brand">MEU BAÚ</span></div>
-        <div style="padding: 40px; text-align: center; color: #888;">
-            <span style="font-size: 50px;">📦</span>
-            <p>Seu baú está vazio.<br>Os Bumerangues que voltarem aparecerão aqui!</p>
-        </div>
-        <div class="nav-bar">
-            <button class="nav-btn" onclick="show('scr-radar')">🧭</button>
-            <button class="nav-btn" onclick="show('scr-chats-list')">💬</button>
-            <button class="nav-btn active-btn" onclick="show('scr-vault')">📦</button>
+    <div id="scr-bau" class="screen" style="text-align: center; padding-top: 50px;">
+        <div class="header">MEU BAÚ</div>
+        <p style="font-size: 50px;">📦</p>
+        <p>Ainda não há nada guardado.</p>
+        <div class="nav">
+            <button class="btn-nav" onclick="mudar('scr-radar')">🧭</button>
+            <button class="btn-nav" style="color:var(--primary)" onclick="mudar('scr-bau')">📦</button>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. Função de Navegação (Mudar de Tela)
-    function show(id) {
+    function mudar(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
 
-    // 2. Entrar no App e carregar Radar
-    function goRadar() {
-        const name = document.getElementById('user-name').value;
-        if(!name) return alert("Por favor, digite seu nome.");
-        
-        show('scr-radar');
-        const list = document.getElementById('grid-list');
-        const profiles = [
-            {n: 'Mariana', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
-            {n: 'Ricardo', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
-            {n: 'Ana', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
-            {n: 'Pedro', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
+    function irRadar() {
+        if(!document.getElementById('uname').value) return alert("Digite seu nome!");
+        mudar('scr-radar');
+        const users = [
+            {n:'Mariana', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200'},
+            {n:'Ricardo', img:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200'}
         ];
+        document.getElementById('grid').innerHTML = users.map(u => `
+            <div class="card" onclick="abrirChat('${u.n}')">
+                <img src="${u.img}">
+                <div style="padding: 10px; font-weight: bold;">${u.n}</div>
+                <div style="position: absolute; right: 5px; bottom: 35px; background: var(--gradient); border-radius: 50%; width: 25px; height: 25px; text-align: center; color: white;">🪃</div>
+            </div>
+        `).join('');
+    }
 
-        list.innerHTML = profiles.map(p => `
-            <div class="card-profile" onclick="openChat('${p.n}')">
-                <img src="${p.img}">
-                <div style="position:absolute; right:10px; bottom
+    function abrirChat(nome) {
+        document.getElementById('cname').innerText = nome;
+        document.getElementById('mbox').innerHTML = `<div class="msg received">Oi! Vi seu bumerangue!</div>`;
+        mudar('scr-chat');
+    }
+
+    function enviar() {
+        const inp = document.getElementById('minput');
+        if(!inp.value) return;
+        const d = document.createElement('div');
+        d.className = 'msg sent';
+        d.innerText = inp.value;
+        document.getElementById('mbox').appendChild(d);
+        inp.value = '';
+        setTimeout(() => {
+            const r = document.createElement('div');
+            r.className = 'msg received';
+            r.innerText = "Interessante! Me conta mais.";
+            document.getElementById('mbox').appendChild(r);
+        }, 1000);
+    }
+</script>
+</body>
+</html>
