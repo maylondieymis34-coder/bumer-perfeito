@@ -1,458 +1,177 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Bumer</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-color='%23FF8C42'/%3E%3Cstop offset='.5' stop-color='%23FF4D8F'/%3E%3Cstop offset='1' stop-color='%239D4EDD'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M25 50Q15 30 35 20L65 30Q85 40 75 60L50 70Q40 75 35 65Z' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='10' fill='white'/%3E%3C/svg%3E">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
-
-        #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
-
-        .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
-        .screen.active { display: flex !important; }
-
-        .logo { font-size: 42px; font-weight: 900; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; }
-
-        /* LOGIN */
-        .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
-        .sub { color: #666; margin: 15px 0 40px; font-size: 18px; }
-        .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
-        .input:focus { border-color: #FF4D8F; }
-        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; }
-
-        /* HEADER */
-        .header { background: white; padding: 20px; text-align: center; font-weight: 700; font-size: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
-        .btn-perfil { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 28px; }
-
-        /* CONTENT */
-        .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; padding-bottom: 90px; }
-
-        /* GRID */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
-        .card img { width: 100%; height: 200px; object-fit: cover; display: block; }
-        .card-info { padding: 15px; }
-        .card-nome { font-weight: 700; font-size: 17px; margin-bottom: 5px; }
-        .card-idade { color: #999; font-size: 15px; }
-        .btn-bumer { position: absolute; bottom: 60px; right: 12px; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-
-        /* CHAT */
-        .chat-header { display: flex; align-items: center; padding: 15px 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; }
-        .back { background: none; border: none; font-size: 28px; margin-right: 15px; }
-        .chat-nome { flex: 1; font-weight: 700; font-size: 19px; }
-        .btn-bau { background: none; border: none; font-size: 32px; }
-        .msgs { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; background: #ECE5DD; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 75%; padding: 14px 18px; border-radius: 20px; font-size: 16px; word-wrap: break-word; }
-        .msg.sent { align-self: flex-end; background: #DCF8C6; border-bottom-right-radius: 5px; }
-        .msg.recv { align-self: flex-start; background: white; border-bottom-left-radius: 5px; }
-        .input-bar { display: flex; gap: 12px; padding: 15px; background: #F0F0F0; align-items: center; flex-shrink: 0; }
-        .input-msg { flex: 1; padding: 14px 20px; border: none; border-radius: 25px; font-size: 16px; outline: none; background: white; }
-        .send { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); color: white; border: none; font-size: 22px; display: flex; align-items: center; justify-content: center; }
-
-        /* CONVERSAS */
-        .conv-item { display: flex; align-items: center; gap: 15px; padding: 18px; background: white; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-        .conv-info { flex: 1; }
-        .conv-nome { font-weight: 700; font-size: 17px; margin-bottom: 5px; }
-        .preview { color: #999; font-size: 15px; }
-
-        /* BAÚ */
-        .bau-item { background: white; border-radius: 20px; padding: 25px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .bau-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; filter: grayscale(100%) opacity(0.5); }
-        .bau-nome { font-weight: 700; font-size: 20px; margin-bottom: 15px; }
-        .timer { font-size: 28px; font-weight: 700; color: #FF4D8F; margin: 15px 0; }
-        .bau-status { color: #999; font-size: 15px; margin-bottom: 20px; }
-        .btn-res { background: #4CAF50; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 700; font-size: 16px; }
-
-        /* PERFIL */
-        .perfil { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 30px; text-align: center; }
-        .foto-perfil { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 20px auto; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
-        .foto-placeholder { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: 700; margin: 20px auto; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .nome-perfil { font-size: 28px; font-weight: 700; margin: 20px 0 10px; }
-        .bio-perfil { color: #666; font-size: 16px; line-height: 1.6; margin: 20px 0; }
-        .btn-foto { background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; margin: 20px 0; }
-        .btn-sair { background: #FF4444; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; margin-top: 40px; }
-        #file-input { display: none; }
-
-        /* VAZIO */
-        .empty { text-align: center; padding: 80px 30px; color: #999; }
-        .empty-icon { font-size: 80px; margin-bottom: 20px; }
-
-        /* MENU */
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 15px 0 calc(15px + env(safe-area-inset-bottom)); border-top: 1px solid #DDD; z-index: 1000; }
-        .nav-btn { background: none; border: none; font-size: 32px; opacity: 0.35; }
-        .nav-btn.active { opacity: 1; transform: scale(1.15); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bumer - Chat em Tempo Real</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f2f5; color: #333; }
+    #login, #chat-area { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    input, button { padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ddd; width: calc(100% - 22px); }
+    button { background: #0084ff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0066cc; }
+    #messages { height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #fafafa; border-radius: 5px; margin-bottom: 10px; }
+    .msg { margin: 8px 0; padding: 10px; border-radius: 10px; max-width: 80%; }
+    .msg.sent { background: #0084ff; color: white; margin-left: auto; }
+    .msg.received { background: #e5e5ea; margin-right: auto; }
+    #profile-pic { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+    #status { color: #666; font-size: 0.9em; }
+  </style>
 </head>
 <body>
 
-<div id="app">
-    
-    <!-- LOGIN -->
-    <div id="s-login" class="screen active">
-        <div class="login">
-            <div class="logo">BUMER</div>
-            <p class="sub">Conexões reais, sem pressão</p>
-            <input type="text" id="nome" class="input" placeholder="Seu nome" autocomplete="off">
-            <button class="btn" onclick="app.login()">ENTRAR</button>
-        </div>
+  <!-- Área de Login -->
+  <div id="login">
+    <h2>Bumer - Entre no Chat</h2>
+    <input id="username" placeholder="Seu nome (obrigatório)" required />
+    <p>Escolha uma foto de perfil (opcional):</p>
+    <input type="file" id="photo-input" accept="image/*" />
+    <img id="preview" src="" alt="" style="width:100px; height:100px; border-radius:50%; display:none;" />
+    <button onclick="entrar()">Entrar no Chat</button>
+  </div>
+
+  <!-- Área do Chat -->
+  <div id="chat-area" style="display:none;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img id="profile-pic" src="https://via.placeholder.com/60" alt="Sua foto" />
+      <h2>Bumer Chat - <span id="meu-nome"></span></h2>
     </div>
-
-    <!-- RADAR -->
-    <div id="s-radar" class="screen">
-        <div class="header">
-            RADAR
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
-        </div>
-        <div class="content"><div class="grid" id="grid"></div></div>
-        <div class="nav">
-            <button class="nav-btn active" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn" onclick="app.go('s-bau')">📦</button>
-        </div>
+    <div id="status">Conectado! Mande sua mensagem...</div>
+    <div id="messages"></div>
+    <div style="display:flex; gap:10px;">
+      <input id="message-input" placeholder="Digite sua mensagem..." />
+      <button onclick="enviarMensagem()">Enviar</button>
     </div>
+  </div>
 
-    <!-- CONVERSAS -->
-    <div id="s-convs" class="screen">
-        <div class="header">
-            CONVERSAS
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
-        </div>
-        <div class="content" id="convs"></div>
-        <div class="nav">
-            <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn active" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn" onclick="app.go('s-bau')">📦</button>
-        </div>
-    </div>
+  <script type="module">
+    // ================== FIREBASE CONFIG ==================
+    // COLE AQUI SUA CONFIG DO FIREBASE (pegue no console.firebase.google.com)
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY_AQUI",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
 
-    <!-- CHAT -->
-    <div id="s-chat" class="screen">
-        <div class="chat-header">
-            <button class="back" onclick="app.go('s-convs')">←</button>
-            <span class="chat-nome" id="cn"></span>
-            <button class="btn-bau" onclick="app.toBau()">🪃</button>
-        </div>
-        <div class="msgs" id="ms"></div>
-        <div class="input-bar">
-            <input type="text" id="im" class="input-msg" placeholder="Mensagem...">
-            <button class="send" onclick="app.send()">✈️</button>
-        </div>
-    </div>
+    // ================== CLOUDINARY CONFIG ==================
+    const CLOUD_NAME = "SEU_CLOUD_NAME_AQUI";           // ex: "demo" ou o seu
+    const UPLOAD_PRESET = "bumer_unsigned";             // o nome do preset unsigned que você criou
 
-    <!-- BAÚ -->
-    <div id="s-bau" class="screen">
-        <div class="header">
-            MEU BAÚ
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
-        </div>
-        <div class="content" id="bau"></div>
-        <div class="nav">
-            <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn active" onclick="app.go('s-bau')">📦</button>
-        </div>
-    </div>
+    // ================== IMPORTS FIREBASE (CDN) ==================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    <!-- PERFIL -->
-    <div id="s-perfil" class="screen">
-        <div class="header">
-            MEU PERFIL
-            <button class="back" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 28px;" onclick="app.go('s-radar')">←</button>
-        </div>
-        <div class="perfil">
-            <div id="fp"></div>
-            <div class="nome-perfil" id="np"></div>
-            <div class="bio-perfil">Membro desde <span id="dt"></span></div>
-            <button class="btn-foto" onclick="document.getElementById('file-input').click()">📷 Trocar Foto</button>
-            <input type="file" id="file-input" accept="image/*">
-            <button class="btn-sair" onclick="app.sair()">SAIR DA CONTA</button>
-        </div>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-</div>
+    let userName = "";
+    let photoUrl = "";
 
-<script>
-const app = {
-    user: null,
-    conns: [],
-    curr: null,
-
-    init() {
-        const u = localStorage.getItem('bumer_user');
-        if (u) {
-            this.user = JSON.parse(u);
-            this.load();
-            this.go('s-radar');
-        }
-
-        document.getElementById('im').addEventListener('keypress', e => {
-            if (e.key === 'Enter') this.send();
-        });
-
-        document.getElementById('file-input').addEventListener('change', e => this.upPhoto(e));
-
-        setInterval(() => this.checkBau(), 60000);
-    },
-
-    login() {
-        const n = document.getElementById('nome').value.trim();
-        if (!n) { alert('Digite seu nome!'); return; }
-
-        this.user = { id: Date.now(), nome: n, foto: null, criado: Date.now() };
-        localStorage.setItem('bumer_user', JSON.stringify(this.user));
-        this.loadRadar();
-        this.go('s-radar');
-    },
-
-    load() {
-        const d = localStorage.getItem('bumer_conns');
-        this.conns = d ? JSON.parse(d) : [];
-    },
-
-    save() {
-        localStorage.setItem('bumer_conns', JSON.stringify(this.conns));
-    },
-
-    loadRadar() {
-        const ps = [
-            {id:1, n:'Ana Silva', i:24, f:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'},
-            {id:2, n:'Carlos Lima', i:27, f:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'},
-            {id:3, n:'Julia Santos', i:23, f:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'},
-            {id:4, n:'Pedro Costa', i:29, f:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400'},
-            {id:5, n:'Maria Souza', i:25, f:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400'},
-            {id:6, n:'Lucas Alves', i:26, f:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-        ];
-
-        document.getElementById('grid').innerHTML = ps.map(p => `
-            <div class="card" onclick="app.connect(${p.id},'${p.n}','${p.f}')">
-                <img src="${p.f}">
-                <div class="btn-bumer">🪃</div>
-                <div class="card-info">
-                    <div class="card-nome">${p.n}</div>
-                    <div class="card-idade">${p.i} anos</div>
-                </div>
-            </div>
-        `).join('');
-    },
-
-    connect(id, n, f) {
-        const ex = this.conns.find(c => c.id === id && !c.bau);
-        if (ex) { this.openChat(id); return; }
-
-        this.conns.push({ id, nome:n, foto:f, msgs:[], criado:Date.now(), bau:false });
-        this.save();
-        alert(`🎉 Conectado com ${n}!`);
-        this.updConvs();
-        this.openChat(id);
-    },
-
-    updConvs() {
-        const cv = this.conns.filter(c => !c.bau);
-        const el = document.getElementById('convs');
-
-        if (!cv.length) {
-            el.innerHTML = '<div class="empty"><div class="empty-icon">💬</div><h3>Nenhuma conversa</h3><p>Vá ao Radar!</p></div>';
-            return;
-        }
-
-        el.innerHTML = cv.map(c => {
-            const um = c.msgs.length ? c.msgs[c.msgs.length-1].txt : 'Diga olá!';
-            return `
-                <div class="conv-item" onclick="app.openChat(${c.id})">
-                    <img src="${c.foto}" class="avatar">
-                    <div class="conv-info">
-                        <div class="conv-nome">${c.nome}</div>
-                        <div class="preview">${um.substring(0,35)}...</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    },
-
-    openChat(id) {
-        this.curr = this.conns.find(c => c.id === id);
-        if (!this.curr) return;
-
-        document.getElementById('cn').textContent = this.curr.nome;
-        this.loadMsgs();
-        this.go('s-chat');
-    },
-
-    loadMsgs() {
-        const el = document.getElementById('ms');
-        
-        if (!this.curr.msgs.length) {
-            el.innerHTML = '<div style="text-align:center;padding:40px;color:#999"><p style="font-size:40px;margin-bottom:10px">👋</p><p>Comece a conversa!</p></div>';
-            return;
-        }
-
-        el.innerHTML = this.curr.msgs.map(m => `<div class="msg ${m.sent?'sent':'recv'}">${m.txt}</div>`).join('');
-        el.scrollTop = el.scrollHeight;
-    },
-
-    send() {
-        const inp = document.getElementById('im');
-        const txt = inp.value.trim();
-        if (!txt || !this.curr) return;
-
-        this.curr.msgs.push({ txt, sent:true, t:Date.now() });
-        this.save();
-        inp.value = '';
-        this.loadMsgs();
-
-        setTimeout(() => {
-            const rs = ['Legal! 😊','Interessante!','Concordo!','Haha 😄','Me conta mais!','Também!'];
-            this.curr.msgs.push({ txt:rs[Math.floor(Math.random()*rs.length)], sent:false, t:Date.now() });
-            this.save();
-            this.loadMsgs();
-        }, 1500);
-    },
-
-    toBau() {
-        if (!this.curr) return;
-
-        const nb = this.conns.filter(c => c.bau).length;
-        if (nb >= 5) { alert('⚠️ Limite de 5 no baú!'); return; }
-
-        if (!confirm(`Enviar ${this.curr.nome} pro baú?\n\n• Bloqueado 5 dias\n• Sem resgatar = deletado`)) return;
-
-        this.curr.bau = true;
-        this.curr.bauStart = Date.now();
-        this.curr.bauEnd = Date.now() + (5*24*60*60*1000);
-        this.save();
-
-        alert(`📦 ${this.curr.nome} no baú!`);
-        this.updConvs();
-        this.updBau();
-        this.go('s-convs');
-    },
-
-    updBau() {
-        const bs = this.conns.filter(c => c.bau);
-        const el = document.getElementById('bau');
-
-        if (!bs.length) {
-            el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>Baú vazio</h3><p>Limite de 5 pessoas</p></div>';
-            return;
-        }
-
-        el.innerHTML = bs.map(c => {
-            const t = this.calcTime(c.bauEnd);
-            return `
-                <div class="bau-item">
-                    <img src="${c.foto}" class="bau-foto">
-                    <div class="bau-nome">${c.nome}</div>
-                    <div class="timer">${t}</div>
-                    <div class="bau-status">Chat bloqueado</div>
-                    <button class="btn-res" onclick="app.rescue(${c.id})">Resgatar</button>
-                </div>
-            `;
-        }).join('');
-    },
-
-    calcTime(end) {
-        const d = end - Date.now();
-        if (d <= 0) return '0d 0h 0m';
-
-        const ds = Math.floor(d / (24*60*60*1000));
-        const hs = Math.floor((d % (24*60*60*1000)) / (60*60*1000));
-        const ms = Math.floor((d % (60*60*1000)) / (60*1000));
-
-        return `${ds}d ${hs}h ${ms}m`;
-    },
-
-    rescue(id) {
-        const c = this.conns.find(x => x.id === id);
-        if (!c) return;
-
-        c.bau = false;
-        c.bauStart = null;
-        c.bauEnd = null;
-        this.save();
-
-        alert(`✅ ${c.nome} resgatado!`);
-        this.updBau();
-        this.updConvs();
-    },
-
-    checkBau() {
-        const now = Date.now();
-        let rm = false;
-
-        this.conns = this.conns.filter(c => {
-            if (c.bau && c.bauEnd && now >= c.bauEnd) {
-                rm = true;
-                return false;
-            }
-            return true;
-        });
-
-        if (rm) {
-            this.save();
-            this.updBau();
-            this.updConvs();
-            alert('⏰ Conexões expiradas removidas!');
-        }
-    },
-
-    upPhoto(e) {
-        const f = e.target.files[0];
-        if (!f) return;
-
-        const r = new FileReader();
-        r.onload = ev => {
-            this.user.foto = ev.target.result;
-            localStorage.setItem('bumer_user', JSON.stringify(this.user));
-            this.loadPerfil();
-            alert('✅ Foto atualizada!');
+    // Preview da foto ao selecionar
+    document.getElementById("photo-input").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById("preview").src = ev.target.result;
+          document.getElementById("preview").style.display = "block";
         };
-        r.readAsDataURL(f);
-    },
+        reader.readAsDataURL(file);
+      }
+    });
 
-    loadPerfil() {
-        const fp = document.getElementById('fp');
-        
-        if (this.user.foto) {
-            fp.innerHTML = `<img src="${this.user.foto}" class="foto-perfil">`;
-        } else {
-            const ini = this.user.nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            fp.innerHTML = `<div class="foto-placeholder">${ini}</div>`;
-        }
+    // Função para upload da foto pro Cloudinary
+    async function uploadFoto(file) {
+      if (!file) return null;
 
-        document.getElementById('np').textContent = this.user.nome;
-        
-        const dt = new Date(this.user.criado);
-        document.getElementById('dt').textContent = `${dt.getDate()}/${dt.getMonth()+1}/${dt.getFullYear()}`;
-    },
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
 
-    sair() {
-        if (!confirm('Deseja sair? Seus dados serão mantidos.')) return;
-        
-        this.go('s-login');
-        setTimeout(() => location.reload(), 500);
-    },
-
-    go(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-        if (id === 's-radar') { this.loadRadar(); }
-        if (id === 's-convs') { this.updConvs(); }
-        if (id === 's-bau') { this.updBau(); }
-        if (id === 's-perfil') { this.loadPerfil(); }
+      try {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        return data.secure_url || null;
+      } catch (err) {
+        console.error("Erro no upload da foto:", err);
+        return null;
+      }
     }
-};
 
-window.addEventListener('DOMContentLoaded', () => app.init());
-</script>
+    // Entrar no chat
+    async function entrar() {
+      userName = document.getElementById("username").value.trim();
+      if (!userName) {
+        alert("Digite seu nome!");
+        return;
+      }
 
+      document.getElementById("login").style.display = "none";
+      document.getElementById("chat-area").style.display = "block";
+      document.getElementById("meu-nome").textContent = userName;
+
+      // Upload da foto se tiver
+      const file = document.getElementById("photo-input").files[0];
+      photoUrl = await uploadFoto(file);
+
+      // Salva perfil no Firestore (pra persistir foto e nome)
+      const userId = "user_" + userName.replace(/\s+/g, "_"); // ID simples baseado no nome (pra teste)
+      await setDoc(doc(db, "users", userId), {
+        name: userName,
+        photo: photoUrl || "https://via.placeholder.com/60",
+        lastSeen: serverTimestamp()
+      }, { merge: true });
+
+      // Mostra foto no chat
+      document.getElementById("profile-pic").src = photoUrl || "https://via.placeholder.com/60";
+
+      ouvirMensagens();
+    }
+
+    // Enviar mensagem
+    async function enviarMensagem() {
+      const input = document.getElementById("message-input");
+      const texto = input.value.trim();
+      if (!texto || !userName) return;
+
+      try {
+        await addDoc(collection(db, "messages"), {
+          text: texto,
+          user: userName,
+          photo: photoUrl,
+          createdAt: serverTimestamp()
+        });
+        input.value = "";
+      } catch (e) {
+        console.error("Erro ao enviar:", e);
+      }
+    }
+
+    // Ouvir mensagens em tempo real
+    function ouvirMensagens() {
+      const q = query(collection(db, "messages"), orderBy("createdAt"));
+      onSnapshot(q, (snapshot) => {
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const msg = doc.data();
+          const div = document.createElement("div");
+          div.className = `msg ${msg.user === userName ? "sent" : "received"}`;
+          div.innerHTML = `
+            ${msg.photo ? `<img src="${msg.photo}" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:8px;">` : ""}
+            <strong>${msg.user}:</strong> ${msg.text}
+          `;
+          messagesDiv.appendChild(div);
+        });
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    }
+  </script>
 </body>
 </html>
