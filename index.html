@@ -454,37 +454,5 @@ const app = {
 window.addEventListener('DOMContentLoaded', () => app.init());
 </script>
 
-<html>
-<head>
-  <!-- aqui continua o seu head original -->
-</head>
-<body>
-  <!-- aqui continua o seu layout original do Bumer -->
-
-  <!-- no fim do body você cola o Firebase -->
-  <script type="module">
-    // imports do Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-    // configuração
-    const firebaseConfig = { ...suas chaves... };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // funções de login e chat
-    async function registrar() { ... }
-    async function entrar() { ... }
-    async function enviarMensagem() { ... }
-    function carregarMensagens() { ... }
-
-    // expõe funções para botões
-    window.registrar = registrar;
-    window.entrar = entrar;
-    window.enviarMensagem = enviarMensagem;
-  </script>
 </body>
-</html></body>
 </html>
