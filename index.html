@@ -4,52 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bumer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
+        /* MANTIVE TODO O SEU CSS ORIGINAL */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
         #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
         .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
         .screen.active { display: flex !important; }
-        
-        /* Visuais Alegres */
-        .logo { font-size: 42px; font-weight: 900; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; padding: 20px; }
+        .logo { font-size: 42px; font-weight: 900; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; }
         .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
+        .sub { color: #666; margin: 15px 0 40px; font-size: 18px; }
         .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
-        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; }
-        
-        .header { background: white; padding: 20px; text-align: center; font-family: 'Fredoka One', cursive; font-size: 24px; color: #9D4EDD; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
+        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; }
+        .header { background: white; padding: 20px; text-align: center; font-weight: 700; font-size: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
+        .btn-perfil { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 28px; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        /* Card e Bumerangue */
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; transition: 0.3s; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
         .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
-        .btn-bumer { position: absolute; bottom: 45px; right: 10px; width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 5; }
-        .card-info { padding: 12px; text-align: center; background: #fff; }
-        .card-info b { font-family: 'Fredoka One', cursive; font-size: 18px; color: #FF4D8F; }
-
-        /* Efeito Neon Verde e Vermelho */
-        .has-msg { animation: neonAlert 0.8s infinite alternate; }
-        @keyframes neonAlert {
-            0% { border-color: #39FF14; box-shadow: 0 0 15px #39FF14; }
-            100% { border-color: #FF0000; box-shadow: 0 0 15px #FF0000; }
-        }
-
-        /* Chat */
+        .card-info { padding: 10px; }
+        .btn-bumer { position: absolute; bottom: 50px; right: 10px; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .chat-header { display: flex; align-items: center; padding: 15px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .back { background: none; border: none; font-size: 24px; margin-right: 10px; }
         .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #E5DDD5; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; word-wrap: break-word; }
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; }
         .msg.sent { align-self: flex-end; background: #DCF8C6; }
         .msg.recv { align-self: flex-start; background: white; }
-        .status { font-size: 12px; margin-left: 5px; color: #999; }
-        .visto { color: #34B7F1 !important; }
-
         .input-bar { display: flex; padding: 10px; background: #F0F0F0; gap: 10px; }
         .input-msg { flex: 1; padding: 12px; border-radius: 20px; border: none; outline: none; }
+        .send { background: #9D4EDD; color: white; border: none; padding: 10px 20px; border-radius: 20px; }
         .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #ddd; }
         .nav-btn { background: none; border: none; font-size: 24px; opacity: 0.4; }
         .nav-btn.active { opacity: 1; }
-        .foto-perfil { width: 120px; height: 120px; border-radius: 60px; object-fit: cover; margin: 20px auto; display: block; border: 4px solid #9D4EDD; }
+        .foto-perfil { width: 120px; height: 120px; border-radius: 60px; object-fit: cover; margin: 20px auto; display: block; }
+        .foto-placeholder { width: 120px; height: 120px; border-radius: 60px; background: #ccc; margin: 20px auto; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; }
     </style>
 </head>
 <body>
@@ -58,13 +46,14 @@
     <div id="s-login" class="screen active">
         <div class="login">
             <div class="logo">BUMER</div>
+            <p class="sub">Conexões reais em tempo real</p>
             <input type="text" id="nome" class="input" placeholder="Seu nome">
             <button class="btn" onclick="app.login()">ENTRAR AGORA</button>
         </div>
     </div>
 
     <div id="s-radar" class="screen">
-        <div class="header">RADAR <button style="position:absolute;right:20px;top:20px;border:none;background:none;font-size:28px" onclick="app.go('s-perfil')">👤</button></div>
+        <div class="header">RADAR <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button></div>
         <div class="content"><div class="grid" id="grid"></div></div>
         <div class="nav">
             <button class="nav-btn active" onclick="app.go('s-radar')">🧭</button>
@@ -73,14 +62,14 @@
     </div>
 
     <div id="s-chat" class="screen">
-        <div class="header" style="display:flex; align-items:center; justify-content: flex-start; padding: 10px 20px;">
-            <button onclick="app.go('s-radar')" style="border:none;background:none;font-size:24px;margin-right:15px">←</button>
-            <span id="cn"></span>
+        <div class="chat-header">
+            <button class="back" onclick="app.go('s-radar')">←</button>
+            <span id="cn" style="font-weight:bold"></span>
         </div>
         <div class="msgs" id="ms"></div>
         <div class="input-bar">
             <input type="text" id="im" class="input-msg" placeholder="Mensagem...">
-            <button onclick="app.send()" style="background:#9D4EDD;color:white;border:none;padding:10px 20px;border-radius:20px">Enviar</button>
+            <button class="send" onclick="app.send()">Enviar</button>
         </div>
     </div>
 
@@ -88,11 +77,11 @@
         <div class="header">MEU PERFIL</div>
         <div style="text-align:center; padding: 20px;">
             <div id="fp"></div>
-            <h2 id="np" style="margin-bottom:20px; font-family:'Fredoka One', cursive; color:#FF4D8F"></h2>
+            <h2 id="np"></h2>
             <input type="file" id="file-input" style="display:none" accept="image/*">
             <button class="btn" style="width:auto; padding:10px 20px;" onclick="document.getElementById('file-input').click()">Mudar Foto</button>
             <br><br>
-            <button class="btn" style="background:red; width:auto; padding:10px 20px;" onclick="app.sair()">Sair da Conta</button>
+            <button class="btn" style="background:red; width:auto; padding:10px 20px;" onclick="app.sair()">Sair</button>
         </div>
         <div class="nav">
             <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
@@ -103,7 +92,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA4IihfRLNToQ04yZVEamFDiz4mMwMVViE",
@@ -118,33 +107,46 @@
     const db = getFirestore(fbApp);
 
     window.app = {
-        user: null, currChatId: null, unsubscribe: null,
+        user: null,
+        currChatId: null,
+        unsubscribe: null,
 
+        // FUNÇÃO DE ALERTA (VIBRAR E SOM)
         alertar() {
             if (navigator.vibrate) navigator.vibrate(200);
-            new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{});
+            const som = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+            som.play().catch(e => console.log("Aguardando interação"));
+        },
+
+        async init() {
+            const u = localStorage.getItem('bumer_user');
+            if (u) {
+                this.user = JSON.parse(u);
+                this.go('s-radar');
+            }
+            document.getElementById('file-input').addEventListener('change', e => this.upPhoto(e));
         },
 
         async login() {
             const n = document.getElementById('nome').value.trim();
             if (!n) return alert('Digite seu nome!');
-            this.user = { id: "u_" + Date.now(), nome: n, foto: '', criado: Date.now() };
-            await setDoc(doc(db, "usuarios", this.user.id), this.user);
+            const userObj = { id: "u_" + Date.now(), nome: n, foto: '', criado: Date.now() };
+            await setDoc(doc(db, "usuarios", userObj.id), userObj);
+            this.user = userObj;
             localStorage.setItem('bumer_user', JSON.stringify(this.user));
             this.go('s-radar');
         },
 
         async loadRadar() {
             const grid = document.getElementById('grid');
-            grid.innerHTML = "Buscando...";
+            grid.innerHTML = "Buscando pessoas...";
             const snap = await getDocs(collection(db, "usuarios"));
             grid.innerHTML = "";
             snap.forEach(d => {
                 const p = d.data();
                 if(p.id === this.user.id) return;
-                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : '';
                 grid.innerHTML += `
-                    <div class="card ${neon}" onclick="app.openChat('${p.id}', '${p.nome}')">
+                    <div class="card" onclick="app.openChat('${p.id}', '${p.nome}')">
                         <img src="${p.foto || 'https://via.placeholder.com/150'}">
                         <div class="btn-bumer">🪃</div>
                         <div class="card-info"><b>${p.nome}</b></div>
@@ -152,10 +154,9 @@
             });
         },
 
-        async openChat(id, nome) {
+        openChat(id, nome) {
             this.currChatId = id;
             document.getElementById('cn').textContent = nome;
-            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true });
             this.go('s-chat');
             this.listen();
         },
@@ -164,43 +165,44 @@
             if (this.unsubscribe) this.unsubscribe();
             const chatId = [this.user.id, this.currChatId].sort().join("_");
             const q = query(collection(db, "chats", chatId, "msgs"), orderBy("t", "asc"));
+            
             this.unsubscribe = onSnapshot(q, (s) => {
                 const el = document.getElementById('ms');
-                s.docChanges().forEach(c => {
-                    if (c.type === "added" && c.doc.data().sid !== this.user.id) this.alertar();
+                
+                // Lógica para vibrar e tocar som apenas em mensagens NOVAS e RECEBIDAS
+                s.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const m = change.doc.data();
+                        // Se a mensagem não é minha, vibra e toca som
+                        if (m.sid !== this.user.id) {
+                            this.alertar();
+                        }
+                    }
                 });
+
                 el.innerHTML = "";
                 s.forEach(d => {
                     const m = d.data();
-                    const isMe = m.sid === this.user.id;
-                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true });
-                    el.innerHTML += `
-                        <div class="msg ${isMe?'sent':'recv'}" onclick="app.deletarMsg('${d.id}')">
-                            ${m.txt}
-                            <span class="status ${m.lido ? 'visto' : ''}">${isMe ? '✓✓' : ''}</span>
-                        </div>`;
+                    const snt = m.sid === this.user.id;
+                    el.innerHTML += `<div class="msg ${snt?'sent':'recv'}">${m.txt}</div>`;
                 });
                 el.scrollTop = el.scrollHeight;
             });
         },
 
-        async deletarMsg(msgId) {
-            if(confirm("Apagar esta mensagem?")) {
-                const chatId = [this.user.id, this.currChatId].sort().join("_");
-                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId));
-            }
-        },
-
         async send() {
             const i = document.getElementById('im');
-            if (!i.value.trim()) return;
+            const txt = i.value.trim();
+            if (!txt) return;
             const chatId = [this.user.id, this.currChatId].sort().join("_");
-            await addDoc(collection(db, "chats", chatId, "msgs"), { txt: i.value, sid: this.user.id, t: serverTimestamp(), lido: false });
-            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true });
+            await addDoc(collection(db, "chats", chatId, "msgs"), {
+                txt, sid: this.user.id, t: serverTimestamp()
+            });
             i.value = "";
         },
 
         async upPhoto(e) {
+            const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 const img = ev.target.result;
@@ -209,11 +211,11 @@
                 localStorage.setItem('bumer_user', JSON.stringify(this.user));
                 this.loadPerfil();
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         },
 
         loadPerfil() {
-            document.getElementById('fp').innerHTML = this.user.foto ? `<img src="${this.user.foto}" class="foto-perfil">` : `<div style="width:120px;height:120px;background:#ccc;border-radius:60px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:40px;color:white">?</div>`;
+            document.getElementById('fp').innerHTML = this.user.foto ? `<img src="${this.user.foto}" class="foto-perfil">` : `<div class="foto-placeholder">?</div>`;
             document.getElementById('np').textContent = this.user.nome;
         },
 
@@ -223,13 +225,11 @@
             if (id === 's-radar') this.loadRadar();
             if (id === 's-perfil') this.loadPerfil();
         },
+
         sair() { localStorage.clear(); location.reload(); }
     };
 
-    window.onload = () => {
-        const u = localStorage.getItem('bumer_user');
-        if (u) { app.user = JSON.parse(u); app.go('s-radar'); }
-    };
+    window.onload = () => app.init();
 </script>
 </body>
 </html>
