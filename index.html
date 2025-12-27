@@ -11,20 +11,187 @@
             --bg: #F8F9FB;
         }
 
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: #1a1a1a; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', Arial, sans-serif; background: #000; color: #333; overflow: hidden; }
+        
+        /* Container que simula o Celular no PC */
+        #main-container { width: 100%; max-width: 414px; height: 100%; background: var(--bg); margin: 0 auto; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
-        #app-container { width: 100%; max-width: 414px; height: 100%; max-height: 896px; background: var(--bg); position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        /* Sistema de Telas */
+        .page { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; }
+        .page.active { display: flex !important; }
 
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; background: var(--bg); }
-        .active { display: flex !important; z-index: 5; }
+        /* Estilo da Logo */
+        .brand-logo { font-size: 32px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin: 20px 0; }
 
-        /* Cabeçalho */
-        .header-app { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
-        .brand { font-size: 22px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 auto; }
+        /* Tela de Cadastro */
+        .login-box { padding: 40px 20px; text-align: center; }
+        .input-style { width: 90%; padding: 15px; margin: 10px 0; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; }
+        .btn-ready { background: var(--gradient); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 90%; font-size: 16px; }
 
-        /* Listagem do Radar */
-        .radar-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
-        .card-profile { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
-        .card-profile img { width: 100%; height: 150px; object-fit: cover; }
-        .profile-info { padding: 10px; font-weight: bold; font-size: 14px; }
-        .bumer-btn-float { position: absolute; right: 10px; bottom: 40px; background: var(--gradient); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; box-shadow: 0 4px 8px rgba(0
+        /* Radar (Grid de Fotos) */
+        .top-bar { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: var(--primary); }
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; overflow-y: auto; flex: 1; padding-bottom: 90px; }
+        .user-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
+        .user-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+        .user-name { padding: 8px 12px; font-weight: bold; font-size: 14px; }
+        .bumer-icon-btn { position: absolute; right: 8px; bottom: 35px; background: var(--gradient); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; font-size: 16px; }
+
+        /* Chat */
+        .chat-area { flex: 1; padding: 15px; overflow-y: auto; background: #E5DDD5; display: flex; flex-direction: column; gap: 8px; }
+        .msg-bubble { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
+        .msg-in { background: white; align-self: flex-start; }
+        .msg-out { background: #DCF8C6; align-self: flex-end; border: 1px solid #ddd; }
+        .chat-input-row { background: white; padding: 10px; display: flex; gap: 10px; align-items: center; }
+        .chat-input-row input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+
+        /* Menu Inferior */
+        .nav-menu { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; z-index: 100; }
+        .nav-link { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; }
+        .nav-link.active-link { color: var(--primary); }
+
+        /* Tela Baú */
+        .bau-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #888; padding: 30px; }
+    </style>
+</head>
+<body>
+
+<div id="main-container">
+    
+    <div id="tela-login" class="page active">
+        <div class="login-box">
+            <div class="brand-logo">BUMER</div>
+            <p>Conecte e receba de volta</p>
+            <input type="text" id="campo-nome" class="input-style" placeholder="Seu Nome">
+            <button class="btn-ready" onclick="entrarNoApp()">ENTRAR AGORA</button>
+        </div>
+    </div>
+
+    <div id="tela-radar" class="page">
+        <div class="top-bar">RADAR</div>
+        <div class="photo-grid" id="lista-pessoas">
+            </div>
+        <div class="nav-menu">
+            <button class="nav-link active-link" onclick="irPara('tela-radar')">🧭</button>
+            <button class="nav-link" onclick="irPara('tela-chat-lista')">💬</button>
+            <button class="nav-link" onclick="irPara('tela-bau')">📦</button>
+        </div>
+    </div>
+
+    <div id="tela-chat-aberto" class="page">
+        <div class="top-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
+            <button onclick="irPara('tela-radar')" style="border:0; background:0; font-size:20px;">←</button>
+            <span id="nome-chat">Conversa</span>
+            <div style="width:20px;"></div>
+        </div>
+        <div class="chat-area" id="caixa-mensagens"></div>
+        <div class="chat-input-row">
+            <input type="text" id="texto-msg" placeholder="Diga algo...">
+            <button onclick="mandarMensagem()" style="background:var(--primary); color:white; border:0; border-radius:50%; width:35px; height:35px;">✈️</button>
+        </div>
+    </div>
+
+    <div id="tela-bau" class="page">
+        <div class="top-bar">MEU BAÚ</div>
+        <div class="bau-content">
+            <div style="font-size: 60px;">📦</div>
+            <h3>Seu Baú está vazio</h3>
+            <p>Quando alguém te der um bumerangue de volta, ele aparecerá aqui!</p>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-link" onclick="irPara('tela-radar')">🧭</button>
+            <button class="nav-link" onclick="irPara('tela-chat-lista')">💬</button>
+            <button class="nav-link active-link" onclick="irPara('tela-bau')">📦</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 1. Função de Navegação - TROCA DE TELAS
+    function irPara(idTela) {
+        console.log("Indo para: " + idTela);
+        // Esconde todas as telas
+        const telas = document.getElementsByClassName('page');
+        for (let i = 0; i < telas.length; i++) {
+            telas[i].classList.remove('active');
+        }
+        // Mostra a tela desejada
+        document.getElementById(idTela).classList.add('active');
+    }
+
+    // 2. Função de Entrar
+    function entrarNoApp() {
+        const nome = document.getElementById('campo-nome').value;
+        if(nome === "") {
+            alert("Por favor, digite seu nome!");
+            return;
+        }
+        carregarPessoas();
+        irPara('tela-radar');
+    }
+
+    // 3. Gerar a lista de pessoas (Grid igual à sua foto)
+    function carregarPessoas() {
+        const dados = [
+            {n: 'Mariana', f: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
+            {n: 'Ricardo', f: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
+            {n: 'Ana', f: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
+            {n: 'Pedro', f: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
+        ];
+        
+        let htmlGrid = "";
+        dados.forEach(pessoa => {
+            htmlGrid += `
+                <div class="user-card" onclick="abrirConversa('${pessoa.n}')">
+                    <img src="${pessoa.f}">
+                    <div class="bumer-icon-btn">🪃</div>
+                    <div class="user-name">${pessoa.n}</div>
+                </div>
+            `;
+        });
+        document.getElementById('lista-pessoas').innerHTML = htmlGrid;
+    }
+
+    // 4. Abrir Chat
+    function abrirConversa(nome) {
+        document.getElementById('nome-chat').innerText = nome;
+        document.getElementById('caixa-mensagens').innerHTML = `
+            <div class="msg-bubble msg-in">Oi! Vi que você me mandou um Bumerangue. Tudo bem?</div>
+        `;
+        irPara('tela-chat-aberto');
+    }
+
+    // 5. Enviar Mensagem
+    function mandarMensagem() {
+        const input = document.getElementById('texto-msg');
+        if(input.value === "") return;
+
+        const caixa = document.getElementById('caixa-mensagens');
+        
+        // Minha mensagem
+        const minhaMsg = document.createElement('div');
+        minhaMsg.className = 'msg-bubble msg-out';
+        minhaMsg.innerText = input.value;
+        caixa.appendChild(minhaMsg);
+        
+        input.value = ""; // limpa campo
+        caixa.scrollTop = caixa.scrollHeight; // rola pra baixo
+
+        // Resposta automática
+        setTimeout(() => {
+            const resposta = document.createElement('div');
+            resposta.className = 'msg-bubble msg-in';
+            resposta.innerText = "Que legal! Vamos marcar algo?";
+            caixa.appendChild(resposta);
+            caixa.scrollTop = caixa.scrollHeight;
+        }, 1500);
+    }
+
+    // Vincular o Enter do teclado para enviar mensagem
+    document.getElementById('texto-msg').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') mandarMensagem();
+    });
+</script>
+
+</body>
+</html>
