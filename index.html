@@ -11,139 +11,114 @@
             --bg: #F8F9FB;
         }
 
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: 'Segoe UI', sans-serif; background: #1a1a1a; 
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: #1a1a1a; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-        #app-container {
-            width: 100%; max-width: 414px; height: 100%; 
-            max-height: 896px; background: var(--bg);
-            position: relative; display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-        }
+        #app-container { width: 100%; max-width: 414px; height: 100%; max-height: 896px; background: var(--bg); position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
 
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; }
-        .active { display: flex !important; }
+        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; background: var(--bg); }
+        .active { display: flex !important; z-index: 5; }
 
-        /* Estilo da Logo e Texto */
-        .logo-section { padding: 50px 0 20px; text-align: center; }
-        .brand { font-size: 28px; font-weight: 900; letter-spacing: 3px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Cadastro */
-        .form-box { padding: 20px 30px; text-align: center; }
-        .circle-upload { width: 110px; height: 110px; border-radius: 50%; border: 3px dashed var(--primary); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; background-size: cover; cursor: pointer; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 30px; border: 1px solid #ddd; box-sizing: border-box; outline: none; }
-        .btn-enter { background: var(--gradient); color: white; border: none; padding: 15px; width: 100%; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        /* Header */
+        .header-app { background: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; display: flex; justify-content:建设; align-items: center; }
+        .brand { font-size: 20px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 auto; }
 
         /* Radar Grid */
-        .header-app { background: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; }
         .radar-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
         .card-profile { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
         .card-profile img { width: 100%; height: 150px; object-fit: cover; }
         .profile-name { padding: 10px; font-weight: bold; font-size: 14px; }
-        .bumer-action { position: absolute; right: 10px; bottom: 40px; background: var(--gradient); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border: 2px solid white; color: white; }
+        
+        /* Chat View */
+        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; background: #f0f2f5; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; font-size: 14px; line-height: 1.4; }
+        .received { background: white; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        /* Input de Mensagem */
+        .input-area { padding: 10px; background: white; display: flex; gap: 8px; border-top: 1px solid #eee; }
+        .input-area input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+        .btn-send { background: var(--gradient); border: none; color: white; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px; }
 
         /* Menu Inferior */
-        .nav-bar { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
-        .nav-btn { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; }
+        .nav-bar { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 10; }
+        .nav-btn { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; transition: 0.3s; }
         .active-btn { color: var(--primary); }
 
-        /* Chat View */
-        .chat-top { background: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; }
-        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; background: #f0f0f0; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 10px 15px; border-radius: 20px; max-width: 80%; font-size: 14px; }
-        .received { background: white; align-self: flex-start; }
-        .sent { background: var(--primary); color: white; align-self: flex-end; }
+        /* Cadastro */
+        .form-box { padding: 40px 30px; text-align: center; }
+        .btn-enter { background: var(--gradient); color: white; border: none; padding: 15px; width: 100%; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
     <div id="scr-auth" class="screen active">
-        <div class="logo-section">
-            <h1 class="brand">BUMER</h1>
-            <p style="color: #888; font-size: 12px;">CONECTE E VOLTE</p>
-        </div>
         <div class="form-box">
-            <div class="circle-upload" id="up-view" onclick="document.getElementById('file-up').click()">📷</div>
-            <input type="file" id="file-up" hidden onchange="doPhoto(event)">
-            <input type="text" id="user-n" placeholder="Seu Nome">
-            <button class="btn-enter" onclick="goRadar()">ENTRAR</button>
+            <h1 class="brand" style="font-size: 40px;">BUMER</h1>
+            <p>Conecte-se e volte sempre</p>
+            <input type="text" id="user-name" placeholder="Seu Nome Completo" style="width:100%; padding:15px; border-radius:30px; border:1px solid #ddd; margin-top:30px; box-sizing:border-box;">
+            <button class="btn-enter" onclick="goRadar()">ENTRAR NO RADAR</button>
         </div>
     </div>
 
     <div id="scr-radar" class="screen">
-        <div class="header-app">RADAR</div>
+        <div class="header-app"><span class="brand">RADAR BUMER</span></div>
         <div class="radar-list" id="grid-list"></div>
         <div class="nav-bar">
-            <button class="nav-btn active-btn">🧭</button>
-            <button class="nav-btn">💬</button>
-            <button class="nav-btn">📦</button>
+            <button class="nav-btn active-btn" onclick="show('scr-radar')">🧭</button>
+            <button class="nav-btn" onclick="show('scr-chats-list')">💬</button>
+            <button class="nav-btn" onclick="show('scr-vault')">📦</button>
         </div>
     </div>
 
     <div id="scr-chat" class="screen">
-        <div class="chat-top">
-            <button onclick="goRadar()" style="border:0; background:0; font-size:20px;">←</button>
-            <strong id="chat-nm">Nome</strong>
+        <div class="header-app">
+            <button onclick="show('scr-radar')" style="border:0; background:0; font-size:20px; cursor:pointer;">←</button>
+            <span id="chat-nm" style="margin-left:10px; flex:1; text-align:left;">Nome</span>
         </div>
         <div class="chat-msgs" id="msg-box"></div>
-        <div style="padding: 10px; background: white; display: flex;">
-            <input type="text" placeholder="Mensagem..." style="margin:0; border-radius: 10px;">
+        <div class="input-area">
+            <input type="text" id="m-input" placeholder="Digite uma mensagem...">
+            <button class="btn-send" onclick="sendMsg()">✈️</button>
+        </div>
+    </div>
+
+    <div id="scr-vault" class="screen">
+        <div class="header-app"><span class="brand">MEU BAÚ</span></div>
+        <div style="padding: 40px; text-align: center; color: #888;">
+            <span style="font-size: 50px;">📦</span>
+            <p>Seu baú está vazio.<br>Os Bumerangues que voltarem aparecerão aqui!</p>
+        </div>
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="show('scr-radar')">🧭</button>
+            <button class="nav-btn" onclick="show('scr-chats-list')">💬</button>
+            <button class="nav-btn active-btn" onclick="show('scr-vault')">📦</button>
         </div>
     </div>
 </div>
 
 <script>
-    // FUNÇÃO PARA MUDAR DE TELA
+    // 1. Função de Navegação (Mudar de Tela)
     function show(id) {
-        console.log("Mudando para a tela: " + id);
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(id);
-        if (target) {
-            target.classList.add('active');
-        } else {
-            console.error("Tela não encontrada: " + id);
-        }
+        document.getElementById(id).classList.add('active');
     }
 
-    function doPhoto(e) {
-        const r = new FileReader();
-        r.onload = () => document.getElementById('up-view').style.backgroundImage = `url(${r.result})`;
-        r.readAsDataURL(e.target.files[0]);
-    }
-
+    // 2. Entrar no App e carregar Radar
     function goRadar() {
+        const name = document.getElementById('user-name').value;
+        if(!name) return alert("Por favor, digite seu nome.");
+        
         show('scr-radar');
         const list = document.getElementById('grid-list');
-        const mock = [
+        const profiles = [
             {n: 'Mariana', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
             {n: 'Ricardo', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
             {n: 'Ana', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
             {n: 'Pedro', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
         ];
-        list.innerHTML = mock.map(u => `
-            <div class="card-profile" onclick="openChat('${u.n}')">
-                <img src="${u.img}">
-                <div class="bumer-action">🪃</div>
-                <div class="profile-name">${u.n}</div>
-            </div>
-        `).join('');
-    }
 
-    function openChat(name) {
-        document.getElementById('chat-nm').innerText = name;
-        document.getElementById('msg-box').innerHTML = `<div class="bubble received">Oi, eu sou ${name}! Adorei o seu Bumer!</div>`;
-        show('scr-chat');
-    }
-
-    // Garante que as funções estejam disponíveis globalmente
-    window.goRadar = goRadar;
-    window.openChat = openChat;
-</script>
-
-</body>
-</html>
+        list.innerHTML = profiles.map(p => `
+            <div class="card-profile" onclick="openChat('${p.n}')">
+                <img src="${p.img}">
+                <div style="position:absolute; right:10px; bottom
