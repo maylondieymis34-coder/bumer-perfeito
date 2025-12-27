@@ -5,42 +5,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bumer - Conexões Reais</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #F0F2F5;
-        overscroll-behavior: none;
-      }
-      .gradient-bg {
-        background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
-      }
-      .gradient-text {
-        background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .hide-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
+        :root {
+            --primary: #FF4D8F;
+            --gradient: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD);
+            --bg: #F8F9FB;
+        }
+
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
+
+        /* Telas */
+        .screen { display: none; width: 100%; height: 100%; position: fixed; top: 0; left: 0; flex-direction: column; }
+        .active { display: flex; }
+
+        /* Cabeçalho com a Logo que enviaste */
+        .app-header { background: white; padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+        .logo-img { height: 50px; }
+
+        /* Grid de Perfis igual à foto */
+        .radar-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; 
+            overflow-y: auto; flex: 1; padding-bottom: 80px; 
+        }
+        .profile-card { 
+            background: white; border-radius: 20px; overflow: hidden; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); position: relative;
+        }
+        .profile-img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
+        .profile-info { padding: 12px; }
+        .profile-info strong { font-size: 14px; display: block; }
+        
+        /* Botão Bumerangue Flutuante no Card */
+        .bumer-btn {
+            position: absolute; bottom: 45px; right: 10px;
+            background: var(--gradient); border-radius: 50%; width: 35px; height: 35px;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Menu Inferior */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: white; 
+            display: flex; justify-content: space-around; padding: 15px 0;
+            border-top: 1px solid #eee; 
+        }
+        .nav-icon { font-size: 24px; color: #ccc; background: none; border: none; cursor: pointer; }
+        .nav-active { color: var(--primary); }
+
+        /* Tela de Cadastro */
+        .auth-container { padding: 40px 20px; text-align: center; }
+        .photo-picker { 
+            width: 120px; height: 120px; border-radius: 50%; background: #f0f0f0; 
+            margin: 20px auto; border: 2px dashed var(--primary); 
+            display: flex; align-items: center; justify-content: center;
+            background-size: cover; background-position: center;
+        }
+        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; }
+        .btn-gmail { 
+            background: white; border: 1px solid #ddd; padding: 12px; border-radius: 25px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; width: 90%; margin: 20px auto;
+        }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
-  }
-}
-</script>
 </head>
-<body class="overflow-hidden">
-    <div id="root"></div>
+<body>
+
+    <div id="auth-screen" class="screen active auth-container">
+        <img src="https://i.ibb.co/vzPRYmY/logo-bumer.png" class="logo-img" alt="Bumer">
+        <h2>Criar Conta</h2>
+        <div class="photo-picker" id="preview" onclick="document.getElementById('file').click()">
+            <span>📷</span>
+        </div>
+        <input type="file" id="file" hidden onchange="handleImg(event)">
+        <input type="text" id="name" placeholder="Nome Completo">
+        <input type="number" id="age" placeholder="Idade">
+        
+        <button class="btn-gmail" onclick="showScreen('radar-screen')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="20"> Entrar com Gmail
+        </button>
+    </div>
+
+    <div id="radar-screen" class="screen">
+        <div class="app-header">
+            <img src="https://i.ibb.co/vzPRYmY/logo-bumer.png" class="logo-img">
+        </div>
+        <div class="radar-grid" id="grid">
+            </div>
+        <nav class="bottom-nav">
+            <button class="nav-icon nav-active">🧭</button>
+            <button class="nav-icon">💬</button>
+            <button class="nav-icon">📦</button>
+        </nav>
+    </div>
+
+    <script>
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'radar-screen') renderGrid();
+        }
+
+        function handleImg(e) {
+            const reader = new FileReader();
+            reader.onload = () => document.getElementById('preview').style.backgroundImage = `url(${reader.result})`;
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        function renderGrid() {
+            const users = [
+                {n: 'Mariana', a: 24, img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'},
+                {n: 'Ricardo', a: 28, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'},
+                {n: 'Ana', a: 22, img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400'},
+                {n: 'Pedro', a: 30, img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400'}
+            ];
+            document.getElementById('grid').innerHTML = users.map(u => `
+                <div class="profile-card">
+                    <img src="${u.img}" class="profile-img">
+                    <div class="bumer-btn">🪃</div>
+                    <div class="profile-info">
+                        <strong>${u.n}, ${u.a}</strong>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
 </body>
 </html>
