@@ -1,0 +1,7 @@
+{
+  "name": "Bumer - Conexões Reais",
+  "description": "A modern social discovery app that fosters real connections through AI-powered icebreakers and a vibrant, card-based interface.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
