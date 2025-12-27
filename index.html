@@ -2,108 +2,70 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bumer</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3843/3843015.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-
     <style>
-        /* Base e Reset */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; width: 100%; overflow: hidden; background: #000; position: fixed; }
+        html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
+        #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
+        .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
+        .screen.active { display: flex !important; }
         
-        #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; display: flex; flex-direction: column; }
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; }
-        .active { display: flex !important; }
+        /* Visuais Alegres */
+        .logo { font-size: 42px; font-weight: 900; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; padding: 20px; }
+        .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
+        .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
+        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; }
         
-        /* Cabeçalho */
-        .header { background: #fff; padding: 15px; text-align: center; font-family: 'Fredoka One', cursive; color: #9D4EDD; font-size: 22px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 50; flex-shrink: 0; }
+        .header { background: white; padding: 20px; text-align: center; font-family: 'Fredoka One', cursive; font-size: 24px; color: #9D4EDD; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
+        .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        /* Grid do Radar */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
-        .card { background: #fff; border-radius: 20px; position: relative; border: 4px solid transparent; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: fit-content; }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card b { display: block; padding: 10px; text-align: center; color: #FF4D8F; font-family: 'Fredoka One'; font-size: 18px; }
-        .del-user { position: absolute; top: 8px; left: 8px; background: rgba(255, 0, 0, 0.8); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-weight: bold; z-index: 20; }
-        
-        /* Chat - A PARTE QUE DAVA ERRO */
-        .chat-container { display: flex; flex-direction: column; height: 100%; background: #E5DDD5; }
-        .msgs { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 16px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .sent { align-self: flex-end; background: #DCF8C6; }
-        .recv { align-self: flex-start; background: #fff; }
-        .status { font-size: 11px; margin-left: 5px; color: #999; }
+        /* Card e Bumerangue */
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; transition: 0.3s; }
+        .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .btn-bumer { position: absolute; bottom: 45px; right: 10px; width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 5; }
+        .card-info { padding: 12px; text-align: center; background: #fff; }
+        .card-info b { font-family: 'Fredoka One', cursive; font-size: 18px; color: #FF4D8F; }
+
+        /* Efeito Neon Verde e Vermelho */
+        .has-msg { animation: neonAlert 0.8s infinite alternate; }
+        @keyframes neonAlert {
+            0% { border-color: #39FF14; box-shadow: 0 0 15px #39FF14; }
+            100% { border-color: #FF0000; box-shadow: 0 0 15px #FF0000; }
+        }
+
+        /* Chat */
+        .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #E5DDD5; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; word-wrap: break-word; }
+        .msg.sent { align-self: flex-end; background: #DCF8C6; }
+        .msg.recv { align-self: flex-start; background: white; }
+        .status { font-size: 12px; margin-left: 5px; color: #999; }
         .visto { color: #34B7F1 !important; }
 
-        /* BARRA DE DIGITAR - FIXA E SEMPRE VISÍVEL */
-        .input-bar { 
-            background: #fff; 
-            padding: 10px 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            border-top: 1px solid #ddd; 
-            position: relative; 
-            z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom, 15px);
-        }
-        .input-chat { 
-            flex: 1; 
-            padding: 12px 18px; 
-            border-radius: 25px; 
-            border: 1px solid #ddd; 
-            outline: none; 
-            font-size: 16px; 
-            background: #f9f9f9;
-            color: #333;
-        }
-        .send-btn { 
-            background: linear-gradient(135deg, #FF4D8F, #9D4EDD); 
-            color: #fff; 
-            border: none; 
-            width: 45px; 
-            height: 45px; 
-            border-radius: 50%; 
-            font-weight: bold; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* Menu de Navegação */
-        .nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #ddd; z-index: 90; }
-        .nav-btn { background: none; border: none; font-size: 24px; opacity: 0.3; }
+        .input-bar { display: flex; padding: 10px; background: #F0F0F0; gap: 10px; }
+        .input-msg { flex: 1; padding: 12px; border-radius: 20px; border: none; outline: none; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #ddd; }
+        .nav-btn { background: none; border: none; font-size: 24px; opacity: 0.4; }
         .nav-btn.active { opacity: 1; }
-
-        /* Login */
-        .login-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; background: #F5F5F5; }
-        .logo { font-size: 50px; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
-        
-        /* Neon */
-        .has-msg { animation: neon 0.8s infinite alternate; }
-        @keyframes neon { 0% { border-color: #39FF14; box-shadow: 0 0 10px #39FF14; } 100% { border-color: #FF0000; box-shadow: 0 0 10px #FF0000; } }
+        .foto-perfil { width: 120px; height: 120px; border-radius: 60px; object-fit: cover; margin: 20px auto; display: block; border: 4px solid #9D4EDD; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="s-login" class="screen active">
-        <div class="login-screen">
+        <div class="login">
             <div class="logo">BUMER</div>
-            <input type="text" id="nome" style="width:100%; padding:18px; border-radius:15px; border:2px solid #ddd; margin-bottom:15px; font-size:16px;" placeholder="Seu nome">
-            <button style="width:100%; padding:18px; border-radius:15px; border:none; background:linear-gradient(135deg, #FF8C42, #9D4EDD); color:white; font-weight:bold; font-size:18px;" onclick="app.login()">ENTRAR AGORA</button>
+            <input type="text" id="nome" class="input" placeholder="Seu nome">
+            <button class="btn" onclick="app.login()">ENTRAR AGORA</button>
         </div>
     </div>
 
     <div id="s-radar" class="screen">
-        <div class="header">RADAR</div>
-        <div class="grid" id="grid"></div>
+        <div class="header">RADAR <button style="position:absolute;right:20px;top:20px;border:none;background:none;font-size:28px" onclick="app.go('s-perfil')">👤</button></div>
+        <div class="content"><div class="grid" id="grid"></div></div>
         <div class="nav">
             <button class="nav-btn active" onclick="app.go('s-radar')">🧭</button>
             <button class="nav-btn" onclick="app.go('s-perfil')">👤</button>
@@ -111,26 +73,26 @@
     </div>
 
     <div id="s-chat" class="screen">
-        <div class="header" style="text-align:left; display:flex; align-items:center">
-            <span onclick="app.go('s-radar')" style="margin-right:15px; font-size:25px; cursor:pointer">←</span>
-            <span id="cn" style="color:#FF4D8F">Chat</span>
+        <div class="header" style="display:flex; align-items:center; justify-content: flex-start; padding: 10px 20px;">
+            <button onclick="app.go('s-radar')" style="border:none;background:none;font-size:24px;margin-right:15px">←</button>
+            <span id="cn"></span>
         </div>
-        <div class="chat-container">
-            <div class="msgs" id="ms"></div>
-            <div class="input-bar">
-                <input type="text" id="im" class="input-chat" placeholder="Digite aqui...">
-                <button class="send-btn" onclick="app.send()">➤</button>
-            </div>
+        <div class="msgs" id="ms"></div>
+        <div class="input-bar">
+            <input type="text" id="im" class="input-msg" placeholder="Mensagem...">
+            <button onclick="app.send()" style="background:#9D4EDD;color:white;border:none;padding:10px 20px;border-radius:20px">Enviar</button>
         </div>
     </div>
 
     <div id="s-perfil" class="screen">
-        <div class="header">PERFIL</div>
-        <div style="text-align:center; padding:40px">
-            <div id="fp" onclick="document.getElementById('file').click()" style="width:130px; height:130px; background:#ddd; border-radius:50%; margin:0 auto; overflow:hidden; border:4px solid #9D4EDD"></div>
-            <input type="file" id="file" style="display:none" accept="image/*" onchange="app.upPhoto(this)">
-            <h2 id="np" style="font-family:'Fredoka One'; margin-top:20px; color:#FF4D8F; font-size:28px"></h2>
-            <button style="margin-top:40px; background:#ff3b30; color:white; border:none; padding:15px; border-radius:15px; width:100%; font-weight:bold" onclick="app.sair()">Sair da Conta</button>
+        <div class="header">MEU PERFIL</div>
+        <div style="text-align:center; padding: 20px;">
+            <div id="fp"></div>
+            <h2 id="np" style="margin-bottom:20px; font-family:'Fredoka One', cursive; color:#FF4D8F"></h2>
+            <input type="file" id="file-input" style="display:none" accept="image/*">
+            <button class="btn" style="width:auto; padding:10px 20px;" onclick="document.getElementById('file-input').click()">Mudar Foto</button>
+            <br><br>
+            <button class="btn" style="background:red; width:auto; padding:10px 20px;" onclick="app.sair()">Sair da Conta</button>
         </div>
         <div class="nav">
             <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
@@ -143,7 +105,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    const cfg = {
+    const firebaseConfig = {
         apiKey: "AIzaSyA4IihfRLNToQ04yZVEamFDiz4mMwMVViE",
         authDomain: "bumer-app-6eee9.firebaseapp.com",
         projectId: "bumer-app-6eee9",
@@ -152,110 +114,121 @@
         appId: "1:574459437994:web:e74ee1662e287866eac1d3"
     };
 
-    const fb = initializeApp(cfg);
-    const db = getFirestore(fb);
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getFirestore(fbApp);
 
     window.app = {
-        u: null, cId: null, sub: null,
-        alert() {
+        user: null, currChatId: null, unsubscribe: null,
+
+        alertar() {
             if (navigator.vibrate) navigator.vibrate(200);
             new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{});
         },
+
         async login() {
             const n = document.getElementById('nome').value.trim();
-            if(!n) return;
-            this.u = { id: 'u'+Date.now(), nome: n, foto: '', deleted: [] };
-            await setDoc(doc(db, "usuarios", this.u.id), this.u);
-            localStorage.setItem('bumer_u', JSON.stringify(this.u));
+            if (!n) return alert('Digite seu nome!');
+            this.user = { id: "u_" + Date.now(), nome: n, foto: '', criado: Date.now() };
+            await setDoc(doc(db, "usuarios", this.user.id), this.user);
+            localStorage.setItem('bumer_user', JSON.stringify(this.user));
             this.go('s-radar');
         },
-        async load() {
-            const g = document.getElementById('grid'); g.innerHTML = "Buscando...";
-            const s = await getDocs(collection(db, "usuarios"));
-            g.innerHTML = "";
-            s.forEach(d => {
+
+        async loadRadar() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "Buscando...";
+            const snap = await getDocs(collection(db, "usuarios"));
+            grid.innerHTML = "";
+            snap.forEach(d => {
                 const p = d.data();
-                if(p.id == this.u.id || (this.u.deleted && this.u.deleted.includes(p.id))) return;
-                const neon = p['msg_'+this.u.id] ? 'has-msg' : '';
-                g.innerHTML += `<div class="card ${neon}" onclick="app.chat('${p.id}','${p.nome}')">
-                    <button class="del-user" onclick="event.stopPropagation(); app.delUser('${p.id}')">X</button>
-                    <img src="${p.foto || 'https://via.placeholder.com/150'}">
-                    <b>${p.nome}</b>
-                </div>`;
-            });
-        },
-        async delUser(id) {
-            if(confirm("Remover do Radar?")) {
-                if(!this.u.deleted) this.u.deleted = [];
-                this.u.deleted.push(id);
-                await updateDoc(doc(db, "usuarios", this.u.id), { deleted: this.u.deleted });
-                localStorage.setItem('bumer_u', JSON.stringify(this.u));
-                this.load();
-            }
-        },
-        async chat(id, n) {
-            this.cId = id; document.getElementById('cn').innerText = n;
-            await setDoc(doc(db, "usuarios", this.u.id), {['msg_'+id]:false}, {merge:true});
-            this.go('s-chat'); this.listen();
-        },
-        listen() {
-            if(this.sub) this.sub();
-            const cid = [this.u.id, this.cId].sort().join('_');
-            const q = query(collection(db, "chats", cid, "msgs"), orderBy("t", "asc"));
-            this.sub = onSnapshot(q, (s) => {
-                const m = document.getElementById('ms'); m.innerHTML = "";
-                s.forEach(d => {
-                    const i = d.data(); const isMe = i.sid == this.u.id;
-                    if(!isMe && !i.lido) { updateDoc(doc(db,"chats",cid,"msgs",d.id), {lido:true}); this.alert(); }
-                    m.innerHTML += `<div class="msg ${isMe?'sent':'recv'}" onclick="app.delMsg('${d.id}')">
-                        ${i.txt} <span class="status ${i.lido?'visto':''}">${isMe?'✓✓':''}</span>
+                if(p.id === this.user.id) return;
+                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : '';
+                grid.innerHTML += `
+                    <div class="card ${neon}" onclick="app.openChat('${p.id}', '${p.nome}')">
+                        <img src="${p.foto || 'https://via.placeholder.com/150'}">
+                        <div class="btn-bumer">🪃</div>
+                        <div class="card-info"><b>${p.nome}</b></div>
                     </div>`;
+            });
+        },
+
+        async openChat(id, nome) {
+            this.currChatId = id;
+            document.getElementById('cn').textContent = nome;
+            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true });
+            this.go('s-chat');
+            this.listen();
+        },
+
+        listen() {
+            if (this.unsubscribe) this.unsubscribe();
+            const chatId = [this.user.id, this.currChatId].sort().join("_");
+            const q = query(collection(db, "chats", chatId, "msgs"), orderBy("t", "asc"));
+            this.unsubscribe = onSnapshot(q, (s) => {
+                const el = document.getElementById('ms');
+                s.docChanges().forEach(c => {
+                    if (c.type === "added" && c.doc.data().sid !== this.user.id) this.alertar();
                 });
-                m.scrollTop = m.scrollHeight;
+                el.innerHTML = "";
+                s.forEach(d => {
+                    const m = d.data();
+                    const isMe = m.sid === this.user.id;
+                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true });
+                    el.innerHTML += `
+                        <div class="msg ${isMe?'sent':'recv'}" onclick="app.deletarMsg('${d.id}')">
+                            ${m.txt}
+                            <span class="status ${m.lido ? 'visto' : ''}">${isMe ? '✓✓' : ''}</span>
+                        </div>`;
+                });
+                el.scrollTop = el.scrollHeight;
             });
         },
+
+        async deletarMsg(msgId) {
+            if(confirm("Apagar esta mensagem?")) {
+                const chatId = [this.user.id, this.currChatId].sort().join("_");
+                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId));
+            }
+        },
+
         async send() {
-            const i = document.getElementById('im'); const txt = i.value.trim();
-            if(!txt) return;
-            const cid = [this.u.id, this.cId].sort().join('_');
-            await addDoc(collection(db, "chats", cid, "msgs"), {
-                txt: txt, sid: this.u.id, t: serverTimestamp() || Date.now(), lido: false
-            });
-            await setDoc(doc(db, "usuarios", this.cId), {['msg_'+this.u.id]:true}, {merge:true});
+            const i = document.getElementById('im');
+            if (!i.value.trim()) return;
+            const chatId = [this.user.id, this.currChatId].sort().join("_");
+            await addDoc(collection(db, "chats", chatId, "msgs"), { txt: i.value, sid: this.user.id, t: serverTimestamp(), lido: false });
+            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true });
             i.value = "";
-            i.focus(); // Mantém o teclado aberto
         },
-        async delMsg(id) {
-            if(confirm("Apagar mensagem?")) {
-                const cid = [this.u.id, this.cId].sort().join('_');
-                await deleteDoc(doc(db, "chats", cid, "msgs", id));
-            }
-        },
-        go(s) {
-            document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
-            document.getElementById(s).classList.add('active');
-            if(s=='s-radar') this.load();
-            if(s=='s-perfil') {
-                document.getElementById('np').innerText = this.u.nome;
-                document.getElementById('fp').innerHTML = this.u.foto ? `<img src="${this.u.foto}" style="width:100%;height:100%;object-fit:cover">` : '?';
-            }
-        },
-        async upPhoto(el) {
-            const r = new FileReader();
-            r.onload = async (e) => {
-                this.u.foto = e.target.result;
-                await updateDoc(doc(db, "usuarios", this.u.id), {foto: this.u.foto});
-                localStorage.setItem('bumer_u', JSON.stringify(this.u));
-                this.go('s-perfil');
+
+        async upPhoto(e) {
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const img = ev.target.result;
+                await setDoc(doc(db, "usuarios", this.user.id), { foto: img }, { merge: true });
+                this.user.foto = img;
+                localStorage.setItem('bumer_user', JSON.stringify(this.user));
+                this.loadPerfil();
             };
-            r.readAsDataURL(el.files[0]);
+            reader.readAsDataURL(e.target.files[0]);
+        },
+
+        loadPerfil() {
+            document.getElementById('fp').innerHTML = this.user.foto ? `<img src="${this.user.foto}" class="foto-perfil">` : `<div style="width:120px;height:120px;background:#ccc;border-radius:60px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:40px;color:white">?</div>`;
+            document.getElementById('np').textContent = this.user.nome;
+        },
+
+        go(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 's-radar') this.loadRadar();
+            if (id === 's-perfil') this.loadPerfil();
         },
         sair() { localStorage.clear(); location.reload(); }
     };
 
     window.onload = () => {
-        const saved = localStorage.getItem('bumer_u');
-        if(saved) { app.u = JSON.parse(saved); app.go('s-radar'); }
+        const u = localStorage.getItem('bumer_user');
+        if (u) { app.user = JSON.parse(u); app.go('s-radar'); }
     };
 </script>
 </body>
