@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bumer</title>
     <style>
+        /* MANTIVE SEU CSS ORIGINAL E ADICIONEI O EFEITO NEON */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
         #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
@@ -20,14 +21,13 @@
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        /* ESTILO DO CARD E DA AURA NEON */
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 3px solid transparent; transition: 0.3s; }
+        /* CARD COM SUPORTE PARA AURA NEON */
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; transition: 0.3s; }
         .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
         
-        /* AURA NEON FLUORESCENTE */
+        /* EFEITO NEON QUE VOCÊ PEDIU: VERDE FLUO PARA VERMELHO FLUO */
         .has-msg { 
             animation: neonAlert 0.8s infinite alternate;
-            border-width: 4px;
             z-index: 10;
         }
 
@@ -130,7 +130,6 @@
         user: null,
         currChatId: null,
         unsubscribe: null,
-        notificados: new Set(), // Para evitar vibrar várias vezes pela mesma mensagem antiga
 
         alertar() {
             if (navigator.vibrate) navigator.vibrate(200);
@@ -159,35 +158,34 @@
 
         async loadRadar() {
             const grid = document.getElementById('grid');
-            grid.innerHTML = "Buscando pessoas...";
+            grid.innerHTML = "Buscando...";
             const snap = await getDocs(collection(db, "usuarios"));
             grid.innerHTML = "";
             
-            for (const d of snap.docs) {
+            snap.forEach(d => {
                 const p = d.data();
-                if(p.id === this.user.id) continue;
+                if(p.id === this.user.id) return;
 
-                // Verifica se tem mensagem não lida para esse usuário
-                const chatId = [this.user.id, p.id].sort().join("_");
-                const hasMsgClass = p['msg_' + this.user.id] ? 'has-msg' : '';
+                // Lógica da Aura Neon: Verifica se existe o campo avisando de nova msg
+                const hasMsgClass = p['msg_' + this.user.id] === true ? 'has-msg' : '';
 
                 grid.innerHTML += `
-                    <div id="card-${p.id}" class="card ${hasMsgClass}" onclick="app.openChat('${p.id}', '${p.nome}')">
+                    <div class="card ${hasMsgClass}" onclick="app.openChat('${p.id}', '${p.nome}')">
                         <img src="${p.foto || 'https://via.placeholder.com/150'}">
                         <div class="btn-bumer">🪃</div>
                         <div class="card-info"><b>${p.nome}</b></div>
                     </div>`;
-            }
+            });
         },
 
         async openChat(id, nome) {
             this.currChatId = id;
             document.getElementById('cn').textContent = nome;
             
-            // Quando abre o chat, remove a aura neon (marca como lido)
-            await updateDoc(doc(db, "usuarios", this.user.id), {
+            // Quando abrir o chat, "apaga" a aura neon no seu perfil
+            await setDoc(doc(db, "usuarios", this.user.id), {
                 ['msg_' + id]: false
-            });
+            }, { merge: true });
             
             this.go('s-chat');
             this.listen();
@@ -203,6 +201,7 @@
                 s.docChanges().forEach(change => {
                     if (change.type === "added") {
                         const m = change.doc.data();
+                        // Alerta apenas se a mensagem for nova e de outra pessoa
                         if (m.sid !== this.user.id && m.t) {
                             this.alertar();
                         }
@@ -222,18 +221,19 @@
         async send() {
             const i = document.getElementById('im');
             const txt = i.value.trim();
-            if (!txt) return;
+            if (!txt || !this.currChatId) return;
+
             const chatId = [this.user.id, this.currChatId].sort().join("_");
             
-            // Envia a mensagem
+            // Envia mensagem
             await addDoc(collection(db, "chats", chatId, "msgs"), {
                 txt, sid: this.user.id, t: serverTimestamp()
             });
 
-            // "Acende" a aura neon no radar do destinatário
-            await updateDoc(doc(db, "usuarios", this.currChatId), {
+            // "Acende" a aura neon no radar da outra pessoa
+            await setDoc(doc(db, "usuarios", this.currChatId), {
                 ['msg_' + this.user.id]: true
-            });
+            }, { merge: true });
 
             i.value = "";
         },
