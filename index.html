@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bumer - Conexões Reais</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bumer App</title>
     <style>
         :root {
             --primary: #FF4D8F;
@@ -13,163 +13,137 @@
 
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            font-family: 'Segoe UI', sans-serif; background: #222; 
+            font-family: 'Segoe UI', sans-serif; background: #1a1a1a; 
             display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        /* Container do App (Efeito Celular) */
-        #app {
-            width: 100%; max-width: 420px; height: 100%; 
-            max-height: 850px; background: var(--bg);
-            position: relative; overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        #app-container {
+            width: 100%; max-width: 414px; height: 100%; 
+            max-height: 896px; background: var(--bg);
+            position: relative; display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; }
-        .active { display: flex; }
+        .screen { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; }
+        .active { display: flex !important; }
 
-        /* Logo e Cabeçalho */
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold; position: sticky; top: 0; z-index: 10; }
-        .bumer-logo-svg { width: 50px; height: 50px; display: block; margin: 0 auto; }
-
-        /* Listagem de Perfis (Radar) */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
-        .card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; transition: transform 0.2s; }
-        .card:active { transform: scale(0.95); }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card-info { padding: 10px; font-size: 13px; font-weight: bold; }
-        
-        .bumer-float {
-            position: absolute; right: 8px; bottom: 38px;
-            background: var(--gradient); border-radius: 50%; width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.2); color: white;
-        }
-
-        /* Tela de Chat */
-        .chat-header { background: white; padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; }
-        .back-btn { border: none; background: none; font-size: 20px; cursor: pointer; }
-        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 18px; max-width: 80%; font-size: 14px; }
-        .msg.received { background: #eee; align-self: flex-start; }
-        .msg.sent { background: var(--primary); color: white; align-self: flex-end; }
-
-        /* Barra de Navegação */
-        .nav { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f0f0f0; }
-        .nav button { border: 0; background: 0; font-size: 22px; color: #ccc; cursor: pointer; }
-        .nav button.active-nav { color: var(--primary); }
+        /* Estilo da Logo e Texto */
+        .logo-section { padding: 50px 0 20px; text-align: center; }
+        .brand { font-size: 28px; font-weight: 900; letter-spacing: 3px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* Cadastro */
-        .form-content { padding: 20px; text-align: center; }
-        .photo-input { width: 100px; height: 100px; border-radius: 50%; border: 2px dashed #ccc; margin: 20px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 25px; border: 1px solid #ddd; box-sizing: border-box; }
-        .btn-main { background: var(--gradient); color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .form-box { padding: 20px 30px; text-align: center; }
+        .circle-upload { width: 110px; height: 110px; border-radius: 50%; border: 3px dashed var(--primary); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; background-size: cover; cursor: pointer; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 30px; border: 1px solid #ddd; box-sizing: border-box; outline: none; }
+        .btn-enter { background: var(--gradient); color: white; border: none; padding: 15px; width: 100%; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 16px; }
+
+        /* Radar Grid */
+        .header-app { background: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; }
+        .radar-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
+        .card-profile { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
+        .card-profile img { width: 100%; height: 150px; object-fit: cover; }
+        .profile-name { padding: 10px; font-weight: bold; font-size: 14px; }
+        .bumer-action { position: absolute; right: 10px; bottom: 40px; background: var(--gradient); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border: 2px solid white; color: white; }
+
+        /* Menu Inferior */
+        .nav-bar { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; }
+        .nav-btn { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; }
+        .active-btn { color: var(--primary); }
+
+        /* Chat View */
+        .chat-top { background: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; }
+        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; background: #f0f0f0; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px 15px; border-radius: 20px; max-width: 80%; font-size: 14px; }
+        .received { background: white; align-self: flex-start; }
+        .sent { background: var(--primary); color: white; align-self: flex-end; }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <div id="screen-auth" class="screen active">
-        <div class="form-content">
-            <svg class="bumer-logo-svg" viewBox="0 0 100 100">
-                <path d="M20,50 Q10,20 40,15 L80,30 Q95,40 85,70 L50,85 Q35,90 25,75 Z" fill="#FF4D8F" />
-                <circle cx="55" cy="45" r="10" fill="white" />
-            </svg>
-            <h2>BUMER</h2>
-            <div class="photo-input" id="photo-preview" onclick="document.getElementById('file').click()"><span>📷</span></div>
-            <input type="file" id="file" hidden onchange="handlePhoto(event)">
-            <input type="text" id="reg-name" placeholder="Nome Completo">
-            <input type="number" id="reg-age" placeholder="Idade">
-            <button class="btn-main" onclick="startApp()">Entrar com Gmail</button>
+<div id="app-container">
+    <div id="scr-auth" class="screen active">
+        <div class="logo-section">
+            <h1 class="brand">BUMER</h1>
+            <p style="color: #888; font-size: 12px;">CONECTE E VOLTE</p>
+        </div>
+        <div class="form-box">
+            <div class="circle-upload" id="up-view" onclick="document.getElementById('file-up').click()">📷</div>
+            <input type="file" id="file-up" hidden onchange="doPhoto(event)">
+            <input type="text" id="user-n" placeholder="Seu Nome">
+            <button class="btn-enter" onclick="goRadar()">ENTRAR</button>
         </div>
     </div>
 
-    <div id="screen-radar" class="screen">
-        <div class="header">RADAR BUMER</div>
-        <div class="grid" id="radar-grid"></div>
-        <div class="nav">
-            <button class="active-nav" onclick="changeScreen('screen-radar')">🧭</button>
-            <button onclick="changeScreen('screen-chats')">💬</button>
-            <button onclick="changeScreen('screen-vault')">📦</button>
+    <div id="scr-radar" class="screen">
+        <div class="header-app">RADAR</div>
+        <div class="radar-list" id="grid-list"></div>
+        <div class="nav-bar">
+            <button class="nav-btn active-btn">🧭</button>
+            <button class="nav-btn">💬</button>
+            <button class="nav-btn">📦</button>
         </div>
     </div>
 
-    <div id="screen-chat-view" class="screen">
-        <div class="chat-header">
-            <button class="back-btn" onclick="changeScreen('screen-radar')">←</button>
-            <strong id="chat-title">Nome</strong>
+    <div id="scr-chat" class="screen">
+        <div class="chat-top">
+            <button onclick="goRadar()" style="border:0; background:0; font-size:20px;">←</button>
+            <strong id="chat-nm">Nome</strong>
         </div>
-        <div class="messages" id="chat-messages">
-            <div class="msg received">Oi! Vi seu Bumerangue. Tudo bem?</div>
-        </div>
-        <div style="padding: 10px; display: flex; gap: 5px;">
-            <input type="text" id="msg-input" placeholder="Digite aqui..." style="margin:0">
-            <button onclick="sendMsg()" style="border:none; background:var(--primary); color:white; border-radius:50%; width:45px; height:45px;">✈️</button>
+        <div class="chat-msgs" id="msg-box"></div>
+        <div style="padding: 10px; background: white; display: flex;">
+            <input type="text" placeholder="Mensagem..." style="margin:0; border-radius: 10px;">
         </div>
     </div>
 </div>
 
 <script>
-    // Função para trocar de tela (Isso resolve o problema de não mexer)
-    function changeScreen(id) {
+    // FUNÇÃO PARA MUDAR DE TELA
+    function show(id) {
+        console.log("Mudando para a tela: " + id);
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    // Função para carregar a foto de perfil
-    function handlePhoto(e) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            document.getElementById('photo-preview').style.backgroundImage = `url(${reader.result})`;
-            document.getElementById('photo-preview').innerHTML = '';
+        const target = document.getElementById(id);
+        if (target) {
+            target.classList.add('active');
+        } else {
+            console.error("Tela não encontrada: " + id);
         }
-        reader.readAsDataURL(e.target.files[0]);
     }
 
-    // Iniciar o App e gerar os perfis
-    function startApp() {
-        if(!document.getElementById('reg-name').value) return alert("Digite seu nome!");
-        changeScreen('screen-radar');
-        loadProfiles();
+    function doPhoto(e) {
+        const r = new FileReader();
+        r.onload = () => document.getElementById('up-view').style.backgroundImage = `url(${r.result})`;
+        r.readAsDataURL(e.target.files[0]);
     }
 
-    // Gerar perfis clicáveis
-    function loadProfiles() {
-        const users = [
-            {n: 'Mariana', a: 24, img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
-            {n: 'Ricardo', a: 28, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
-            {n: 'Ana', a: 22, img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
-            {n: 'Pedro', a: 30, img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
+    function goRadar() {
+        show('scr-radar');
+        const list = document.getElementById('grid-list');
+        const mock = [
+            {n: 'Mariana', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
+            {n: 'Ricardo', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
+            {n: 'Ana', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
+            {n: 'Pedro', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
         ];
-        
-        const grid = document.getElementById('radar-grid');
-        grid.innerHTML = users.map(u => `
-            <div class="card" onclick="openChat('${u.n}')">
+        list.innerHTML = mock.map(u => `
+            <div class="card-profile" onclick="openChat('${u.n}')">
                 <img src="${u.img}">
-                <div class="bumer-float">🪃</div>
-                <div class="card-info">${u.n}, ${u.a}</div>
+                <div class="bumer-action">🪃</div>
+                <div class="profile-name">${u.n}</div>
             </div>
         `).join('');
     }
 
-    // Função para abrir o Chat ao clicar no card
     function openChat(name) {
-        document.getElementById('chat-title').innerText = name;
-        document.getElementById('chat-messages').innerHTML = `<div class="msg received">Oi! Eu sou ${name}, vi que você me deu um Bumer!</div>`;
-        changeScreen('screen-chat-view');
+        document.getElementById('chat-nm').innerText = name;
+        document.getElementById('msg-box').innerHTML = `<div class="bubble received">Oi, eu sou ${name}! Adorei o seu Bumer!</div>`;
+        show('scr-chat');
     }
 
-    // Função para enviar mensagem
-    function sendMsg() {
-        const input = document.getElementById('msg-input');
-        if(!input.value) return;
-        const div = document.createElement('div');
-        div.className = 'msg sent';
-        div.innerText = input.value;
-        document.getElementById('chat-messages').appendChild(div);
-        input.value = '';
-        document.getElementById('chat-messages').scrollTop = 9999;
-    }
+    // Garante que as funções estejam disponíveis globalmente
+    window.goRadar = goRadar;
+    window.openChat = openChat;
 </script>
+
 </body>
 </html>
