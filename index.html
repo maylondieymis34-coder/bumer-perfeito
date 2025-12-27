@@ -3,456 +3,795 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Bumer</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-color='%23FF8C42'/%3E%3Cstop offset='.5' stop-color='%23FF4D8F'/%3E%3Cstop offset='1' stop-color='%239D4EDD'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M25 50Q15 30 35 20L65 30Q85 40 75 60L50 70Q40 75 35 65Z' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='50' r='10' fill='white'/%3E%3C/svg%3E">
+    <title>Bumer - App de Conexões</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🪃</text></svg>">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: white;
+            overflow-x: hidden;
+        }
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: flex; }
         
-        html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
-
-        #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
-
-        .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
-        .screen.active { display: flex !important; }
-
-        .logo { font-size: 42px; font-weight: 900; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; }
-
-        /* LOGIN */
-        .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
-        .sub { color: #666; margin: 15px 0 40px; font-size: 18px; }
-        .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
-        .input:focus { border-color: #FF4D8F; }
-        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; }
-
-        /* HEADER */
-        .header { background: white; padding: 20px; text-align: center; font-weight: 700; font-size: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
-        .btn-perfil { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 28px; }
-
-        /* CONTENT */
-        .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; padding-bottom: 90px; }
-
-        /* GRID */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
-        .card img { width: 100%; height: 200px; object-fit: cover; display: block; }
-        .card-info { padding: 15px; }
-        .card-nome { font-weight: 700; font-size: 17px; margin-bottom: 5px; }
-        .card-idade { color: #999; font-size: 15px; }
-        .btn-bumer { position: absolute; bottom: 60px; right: 12px; width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-
-        /* CHAT */
-        .chat-header { display: flex; align-items: center; padding: 15px 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; }
-        .back { background: none; border: none; font-size: 28px; margin-right: 15px; }
-        .chat-nome { flex: 1; font-weight: 700; font-size: 19px; }
-        .btn-bau { background: none; border: none; font-size: 32px; }
-        .msgs { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; background: #ECE5DD; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 75%; padding: 14px 18px; border-radius: 20px; font-size: 16px; word-wrap: break-word; }
-        .msg.sent { align-self: flex-end; background: #DCF8C6; border-bottom-right-radius: 5px; }
-        .msg.recv { align-self: flex-start; background: white; border-bottom-left-radius: 5px; }
-        .input-bar { display: flex; gap: 12px; padding: 15px; background: #F0F0F0; align-items: center; flex-shrink: 0; }
-        .input-msg { flex: 1; padding: 14px 20px; border: none; border-radius: 25px; font-size: 16px; outline: none; background: white; }
-        .send { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); color: white; border: none; font-size: 22px; display: flex; align-items: center; justify-content: center; }
-
-        /* CONVERSAS */
-        .conv-item { display: flex; align-items: center; gap: 15px; padding: 18px; background: white; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-        .conv-info { flex: 1; }
-        .conv-nome { font-weight: 700; font-size: 17px; margin-bottom: 5px; }
-        .preview { color: #999; font-size: 15px; }
-
-        /* BAÚ */
-        .bau-item { background: white; border-radius: 20px; padding: 25px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .bau-foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; filter: grayscale(100%) opacity(0.5); }
-        .bau-nome { font-weight: 700; font-size: 20px; margin-bottom: 15px; }
-        .timer { font-size: 28px; font-weight: 700; color: #FF4D8F; margin: 15px 0; }
-        .bau-status { color: #999; font-size: 15px; margin-bottom: 20px; }
-        .btn-res { background: #4CAF50; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: 700; font-size: 16px; }
-
-        /* PERFIL */
-        .perfil { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 30px; text-align: center; }
-        .foto-perfil { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin: 20px auto; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; }
-        .foto-placeholder { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: 700; margin: 20px auto; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .nome-perfil { font-size: 28px; font-weight: 700; margin: 20px 0 10px; }
-        .bio-perfil { color: #666; font-size: 16px; line-height: 1.6; margin: 20px 0; }
-        .btn-foto { background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; margin: 20px 0; }
-        .btn-sair { background: #FF4444; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; font-size: 16px; margin-top: 40px; }
-        #file-input { display: none; }
-
-        /* VAZIO */
-        .empty { text-align: center; padding: 80px 30px; color: #999; }
-        .empty-icon { font-size: 80px; margin-bottom: 20px; }
-
-        /* MENU */
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 15px 0 calc(15px + env(safe-area-inset-bottom)); border-top: 1px solid #DDD; z-index: 1000; }
-        .nav-btn { background: none; border: none; font-size: 32px; opacity: 0.35; }
-        .nav-btn.active { opacity: 1; transform: scale(1.15); }
+        /* Splash Screen */
+        #splash { flex-direction: column; align-items: center; justify-content: center; }
+        .logo { 
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header.gradient {
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-title.white { 
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: white;
+        }
+        
+        /* Signup */
+        #signup {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        input {
+            width: 100%;
+            max-width: 400px;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        input:focus { outline: none; border-color: #9D4EDD; }
+        .btn {
+            width: 100%;
+            max-width: 400px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+            color: white;
+        }
+        .btn:hover { opacity: 0.9; }
+        
+        /* Radar */
+        .radar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        .user-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .user-card:hover { transform: scale(1.02); }
+        .user-photo {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .user-avatar {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+        }
+        .user-info {
+            padding: 12px;
+        }
+        .user-icons {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .icon-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        /* Conversations */
+        .conv-list {
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+        .conv-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .conv-item:hover { background: #f9f9f9; }
+        .conv-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .avatar-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        /* Chat */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f5f5f5;
+        }
+        .message {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        .message.sent { justify-content: flex-end; }
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+        }
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #9D4EDD, #FF4D8F);
+            color: white;
+        }
+        .message.received .message-bubble {
+            background: white;
+            color: #333;
+        }
+        .chat-input {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        .chat-input input {
+            flex: 1;
+            margin: 0;
+            border-radius: 24px;
+        }
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #9D4EDD, #FF4D8F);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Vault */
+        .vault-list {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        .vault-item {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .vault-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .vault-avatar {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+        .vault-timer {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: monospace;
+            margin-bottom: 12px;
+        }
+        .rescue-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #06FFA5, #4CC9F0);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Profile */
+        .profile-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .profile-photo-container {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .profile-photo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #9D4EDD;
+        }
+        .profile-avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            font-weight: bold;
+            color: white;
+            border: 4px solid #9D4EDD;
+        }
+        .photo-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #9D4EDD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .photo-btn:hover { background: #8B3FCC; }
+        .logout-btn {
+            background: #ef4444;
+            margin-top: 24px;
+        }
+        .logout-btn:hover { background: #dc2626; }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+        }
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .nav-btn.active { color: #9D4EDD; }
+        .nav-label {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            padding: 24px;
+        }
+        .empty-icon { font-size: 64px; margin-bottom: 16px; }
+        
+        /* Utilities */
+        .flex-col { display: flex; flex-direction: column; }
+        .h-100 { height: 100vh; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .font-bold { font-weight: bold; }
+        .text-gray { color: #666; }
     </style>
 </head>
 <body>
-
-<div id="app">
-    
-    <!-- LOGIN -->
-    <div id="s-login" class="screen active">
-        <div class="login">
-            <div class="logo">BUMER</div>
-            <p class="sub">Conexões reais, sem pressão</p>
-            <input type="text" id="nome" class="input" placeholder="Seu nome" autocomplete="off">
-            <button class="btn" onclick="app.login()">ENTRAR</button>
-        </div>
+    <!-- Splash Screen -->
+    <div id="splash" class="screen active">
+        <div class="logo">🪃</div>
+        <h1 class="font-bold" style="margin-top: 16px; font-size: 32px;">BUMER</h1>
+        <p class="text-gray mt-2">Conecte-se de um jeito novo</p>
     </div>
 
-    <!-- RADAR -->
-    <div id="s-radar" class="screen">
-        <div class="header">
-            RADAR
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
-        </div>
-        <div class="content"><div class="grid" id="grid"></div></div>
-        <div class="nav">
-            <button class="nav-btn active" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn" onclick="app.go('s-bau')">📦</button>
-        </div>
+    <!-- Signup -->
+    <div id="signup" class="screen">
+        <div class="logo" style="margin-bottom: 24px;">🪃</div>
+        <h1 class="font-bold mb-4" style="font-size: 24px;">Bem-vindo ao Bumer</h1>
+        <input type="text" id="nameInput" placeholder="Digite seu nome" maxlength="50">
+        <button class="btn" onclick="handleSignup()">Entrar no Bumer</button>
     </div>
 
-    <!-- CONVERSAS -->
-    <div id="s-convs" class="screen">
-        <div class="header">
-            CONVERSAS
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
+    <!-- Profile -->
+    <div id="profile" class="screen flex-col h-100">
+        <div class="header gradient">
+            <button style="background:none;border:none;color:white;font-size:24px;cursor:pointer;" onclick="showScreen('radar')">←</button>
+            <span class="header-title white">Meu Perfil</span>
+            <div style="width:24px;"></div>
         </div>
-        <div class="content" id="convs"></div>
-        <div class="nav">
-            <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn active" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn" onclick="app.go('s-bau')">📦</button>
-        </div>
-    </div>
-
-    <!-- CHAT -->
-    <div id="s-chat" class="screen">
-        <div class="chat-header">
-            <button class="back" onclick="app.go('s-convs')">←</button>
-            <span class="chat-nome" id="cn"></span>
-            <button class="btn-bau" onclick="app.toBau()">🪃</button>
-        </div>
-        <div class="msgs" id="ms"></div>
-        <div class="input-bar">
-            <input type="text" id="im" class="input-msg" placeholder="Mensagem...">
-            <button class="send" onclick="app.send()">✈️</button>
-        </div>
-    </div>
-
-    <!-- BAÚ -->
-    <div id="s-bau" class="screen">
-        <div class="header">
-            MEU BAÚ
-            <button class="btn-perfil" onclick="app.go('s-perfil')">👤</button>
-        </div>
-        <div class="content" id="bau"></div>
-        <div class="nav">
-            <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
-            <button class="nav-btn" onclick="app.go('s-convs')">💬</button>
-            <button class="nav-btn active" onclick="app.go('s-bau')">📦</button>
-        </div>
-    </div>
-
-    <!-- PERFIL -->
-    <div id="s-perfil" class="screen">
-        <div class="header">
-            MEU PERFIL
-            <button class="back" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 28px;" onclick="app.go('s-radar')">←</button>
-        </div>
-        <div class="perfil">
-            <div id="fp"></div>
-            <div class="nome-perfil" id="np"></div>
-            <div class="bio-perfil">Membro desde <span id="dt"></span></div>
-            <button class="btn-foto" onclick="document.getElementById('file-input').click()">📷 Trocar Foto</button>
-            <input type="file" id="file-input" accept="image/*">
-            <button class="btn-sair" onclick="app.sair()">SAIR DA CONTA</button>
-        </div>
-    </div>
-
-</div>
-
-<script>
-const app = {
-    user: null,
-    conns: [],
-    curr: null,
-
-    init() {
-        const u = localStorage.getItem('bumer_user');
-        if (u) {
-            this.user = JSON.parse(u);
-            this.load();
-            this.go('s-radar');
-        }
-
-        document.getElementById('im').addEventListener('keypress', e => {
-            if (e.key === 'Enter') this.send();
-        });
-
-        document.getElementById('file-input').addEventListener('change', e => this.upPhoto(e));
-
-        setInterval(() => this.checkBau(), 60000);
-    },
-
-    login() {
-        const n = document.getElementById('nome').value.trim();
-        if (!n) { alert('Digite seu nome!'); return; }
-
-        this.user = { id: Date.now(), nome: n, foto: null, criado: Date.now() };
-        localStorage.setItem('bumer_user', JSON.stringify(this.user));
-        this.loadRadar();
-        this.go('s-radar');
-    },
-
-    load() {
-        const d = localStorage.getItem('bumer_conns');
-        this.conns = d ? JSON.parse(d) : [];
-    },
-
-    save() {
-        localStorage.setItem('bumer_conns', JSON.stringify(this.conns));
-    },
-
-    loadRadar() {
-        const ps = [
-            {id:1, n:'Ana Silva', i:24, f:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'},
-            {id:2, n:'Carlos Lima', i:27, f:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'},
-            {id:3, n:'Julia Santos', i:23, f:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'},
-            {id:4, n:'Pedro Costa', i:29, f:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400'},
-            {id:5, n:'Maria Souza', i:25, f:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400'},
-            {id:6, n:'Lucas Alves', i:26, f:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-        ];
-
-        document.getElementById('grid').innerHTML = ps.map(p => `
-            <div class="card" onclick="app.connect(${p.id},'${p.n}','${p.f}')">
-                <img src="${p.f}">
-                <div class="btn-bumer">🪃</div>
-                <div class="card-info">
-                    <div class="card-nome">${p.n}</div>
-                    <div class="card-idade">${p.i} anos</div>
-                </div>
+        <div class="profile-content">
+            <div class="profile-photo-container">
+                <div id="profilePhotoDisplay"></div>
+                <label class="photo-btn">
+                    📷
+                    <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" style="display:none;">
+                </label>
             </div>
-        `).join('');
-    },
+            <h2 class="font-bold" style="font-size: 24px;" id="profileName">Nome</h2>
+            <p class="text-gray mt-2">Membro desde hoje</p>
+            <button class="btn logout-btn" onclick="logout()">Sair da Conta</button>
+        </div>
+    </div>
 
-    connect(id, n, f) {
-        const ex = this.conns.find(c => c.id === id && !c.bau);
-        if (ex) { this.openChat(id); return; }
+    <!-- Radar -->
+    <div id="radar" class="screen flex-col h-100">
+        <div class="header">
+            <h1 class="header-title">BUMER</h1>
+            <button style="background:none;border:none;font-size:28px;cursor:pointer;" onclick="showScreen('profile')">👤</button>
+        </div>
+        <div class="radar-grid" id="radarGrid"></div>
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="showScreen('radar')">
+                <span>🧭</span>
+                <span class="nav-label">Radar</span>
+            </button>
+            <button class="nav-btn" onclick="showScreen('conversations')">
+                <span>💬</span>
+                <span class="nav-label">Conversas</span>
+            </button>
+            <button class="nav-btn" onclick="showScreen('vault')">
+                <span>📦</span>
+                <span class="nav-label">Baú</span>
+            </button>
+        </div>
+    </div>
 
-        this.conns.push({ id, nome:n, foto:f, msgs:[], criado:Date.now(), bau:false });
-        this.save();
-        alert(`🎉 Conectado com ${n}!`);
-        this.updConvs();
-        this.openChat(id);
-    },
+    <!-- Conversations -->
+    <div id="conversations" class="screen flex-col h-100">
+        <div class="header">
+            <h1 class="font-bold" style="font-size: 24px;">Conversas</h1>
+        </div>
+        <div class="conv-list" id="convList"></div>
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="showScreen('radar')">
+                <span>🧭</span>
+                <span class="nav-label">Radar</span>
+            </button>
+            <button class="nav-btn active" onclick="showScreen('conversations')">
+                <span>💬</span>
+                <span class="nav-label">Conversas</span>
+            </button>
+            <button class="nav-btn" onclick="showScreen('vault')">
+                <span>📦</span>
+                <span class="nav-label">Baú</span>
+            </button>
+        </div>
+    </div>
 
-    updConvs() {
-        const cv = this.conns.filter(c => !c.bau);
-        const el = document.getElementById('convs');
+    <!-- Chat -->
+    <div id="chat" class="screen flex-col h-100">
+        <div class="header gradient">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button style="background:none;border:none;color:white;font-size:24px;cursor:pointer;" onclick="showScreen('conversations')">←</button>
+                <div id="chatUserAvatar"></div>
+                <span class="header-title white" id="chatUserName">Usuário</span>
+            </div>
+            <button style="background:none;border:none;font-size:28px;cursor:pointer;" onclick="sendToVault()">🪃</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Digite uma mensagem...">
+            <button class="send-btn" onclick="sendMessage()">✈️</button>
+        </div>
+    </div>
 
-        if (!cv.length) {
-            el.innerHTML = '<div class="empty"><div class="empty-icon">💬</div><h3>Nenhuma conversa</h3><p>Vá ao Radar!</p></div>';
-            return;
-        }
+    <!-- Vault -->
+    <div id="vault" class="screen flex-col h-100">
+        <div class="header">
+            <div>
+                <h1 class="font-bold" style="font-size: 24px;">Meu Baú</h1>
+                <p style="font-size: 12px; color: #999;">Pessoas que você quis dar um tempo</p>
+            </div>
+        </div>
+        <div class="vault-list" id="vaultList"></div>
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="showScreen('radar')">
+                <span>🧭</span>
+                <span class="nav-label">Radar</span>
+            </button>
+            <button class="nav-btn" onclick="showScreen('conversations')">
+                <span>💬</span>
+                <span class="nav-label">Conversas</span>
+            </button>
+            <button class="nav-btn active" onclick="showScreen('vault')">
+                <span>📦</span>
+                <span class="nav-label">Baú</span>
+            </button>
+        </div>
+    </div>
 
-        el.innerHTML = cv.map(c => {
-            const um = c.msgs.length ? c.msgs[c.msgs.length-1].txt : 'Diga olá!';
-            return `
-                <div class="conv-item" onclick="app.openChat(${c.id})">
-                    <img src="${c.foto}" class="avatar">
-                    <div class="conv-info">
-                        <div class="conv-nome">${c.nome}</div>
-                        <div class="preview">${um.substring(0,35)}...</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    },
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, orderBy, doc, updateDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-    openChat(id) {
-        this.curr = this.conns.find(c => c.id === id);
-        if (!this.curr) return;
-
-        document.getElementById('cn').textContent = this.curr.nome;
-        this.loadMsgs();
-        this.go('s-chat');
-    },
-
-    loadMsgs() {
-        const el = document.getElementById('ms');
-        
-        if (!this.curr.msgs.length) {
-            el.innerHTML = '<div style="text-align:center;padding:40px;color:#999"><p style="font-size:40px;margin-bottom:10px">👋</p><p>Comece a conversa!</p></div>';
-            return;
-        }
-
-        el.innerHTML = this.curr.msgs.map(m => `<div class="msg ${m.sent?'sent':'recv'}">${m.txt}</div>`).join('');
-        el.scrollTop = el.scrollHeight;
-    },
-
-    send() {
-        const inp = document.getElementById('im');
-        const txt = inp.value.trim();
-        if (!txt || !this.curr) return;
-
-        this.curr.msgs.push({ txt, sent:true, t:Date.now() });
-        this.save();
-        inp.value = '';
-        this.loadMsgs();
-
-        setTimeout(() => {
-            const rs = ['Legal! 😊','Interessante!','Concordo!','Haha 😄','Me conta mais!','Também!'];
-            this.curr.msgs.push({ txt:rs[Math.floor(Math.random()*rs.length)], sent:false, t:Date.now() });
-            this.save();
-            this.loadMsgs();
-        }, 1500);
-    },
-
-    toBau() {
-        if (!this.curr) return;
-
-        const nb = this.conns.filter(c => c.bau).length;
-        if (nb >= 5) { alert('⚠️ Limite de 5 no baú!'); return; }
-
-        if (!confirm(`Enviar ${this.curr.nome} pro baú?\n\n• Bloqueado 5 dias\n• Sem resgatar = deletado`)) return;
-
-        this.curr.bau = true;
-        this.curr.bauStart = Date.now();
-        this.curr.bauEnd = Date.now() + (5*24*60*60*1000);
-        this.save();
-
-        alert(`📦 ${this.curr.nome} no baú!`);
-        this.updConvs();
-        this.updBau();
-        this.go('s-convs');
-    },
-
-    updBau() {
-        const bs = this.conns.filter(c => c.bau);
-        const el = document.getElementById('bau');
-
-        if (!bs.length) {
-            el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>Baú vazio</h3><p>Limite de 5 pessoas</p></div>';
-            return;
-        }
-
-        el.innerHTML = bs.map(c => {
-            const t = this.calcTime(c.bauEnd);
-            return `
-                <div class="bau-item">
-                    <img src="${c.foto}" class="bau-foto">
-                    <div class="bau-nome">${c.nome}</div>
-                    <div class="timer">${t}</div>
-                    <div class="bau-status">Chat bloqueado</div>
-                    <button class="btn-res" onclick="app.rescue(${c.id})">Resgatar</button>
-                </div>
-            `;
-        }).join('');
-    },
-
-    calcTime(end) {
-        const d = end - Date.now();
-        if (d <= 0) return '0d 0h 0m';
-
-        const ds = Math.floor(d / (24*60*60*1000));
-        const hs = Math.floor((d % (24*60*60*1000)) / (60*60*1000));
-        const ms = Math.floor((d % (60*60*1000)) / (60*1000));
-
-        return `${ds}d ${hs}h ${ms}m`;
-    },
-
-    rescue(id) {
-        const c = this.conns.find(x => x.id === id);
-        if (!c) return;
-
-        c.bau = false;
-        c.bauStart = null;
-        c.bauEnd = null;
-        this.save();
-
-        alert(`✅ ${c.nome} resgatado!`);
-        this.updBau();
-        this.updConvs();
-    },
-
-    checkBau() {
-        const now = Date.now();
-        let rm = false;
-
-        this.conns = this.conns.filter(c => {
-            if (c.bau && c.bauEnd && now >= c.bauEnd) {
-                rm = true;
-                return false;
-            }
-            return true;
-        });
-
-        if (rm) {
-            this.save();
-            this.updBau();
-            this.updConvs();
-            alert('⏰ Conexões expiradas removidas!');
-        }
-    },
-
-    upPhoto(e) {
-        const f = e.target.files[0];
-        if (!f) return;
-
-        const r = new FileReader();
-        r.onload = ev => {
-            this.user.foto = ev.target.result;
-            localStorage.setItem('bumer_user', JSON.stringify(this.user));
-            this.loadPerfil();
-            alert('✅ Foto atualizada!');
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4IihfRLNToQ04yZVEamFDiz4mMwMVViE",
+            authDomain: "bumer-app-6eee9.firebaseapp.com",
+            projectId: "bumer-app-6eee9",
+            storageBucket: "bumer-app-6eee9.firebasestorage.app",
+            messagingSenderId: "574459437994",
+            appId: "1:574459437994:web:e74ee1662e287866eac1d3"
         };
-        r.readAsDataURL(f);
-    },
 
-    loadPerfil() {
-        const fp = document.getElementById('fp');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
         
-        if (this.user.foto) {
-            fp.innerHTML = `<img src="${this.user.foto}" class="foto-perfil">`;
-        } else {
-            const ini = this.user.nome.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            fp.innerHTML = `<div class="foto-placeholder">${ini}</div>`;
+        window.db = db;
+        window.firestoreModules = { collection, addDoc, query, where, getDocs, onSnapshot, orderBy, doc, updateDoc, deleteDoc, serverTimestamp };
+    </script>
+
+    <script>
+        let currentUser = null;
+        let currentChat = null;
+        let usersListener = null;
+        let connectionsListener = null;
+        let messagesListener = null;
+
+        // Utility Functions
+        function getAvatarColor(name) {
+            const colors = ['#FF8C42', '#FF4D8F', '#9D4EDD', '#4CC9F0', '#06FFA5'];
+            const index = (name?.charCodeAt(0) || 0) % colors.length;
+            return colors[index];
         }
 
-        document.getElementById('np').textContent = this.user.nome;
-        
-        const dt = new Date(this.user.criado);
-        document.getElementById('dt').textContent = `${dt.getDate()}/${dt.getMonth()+1}/${dt.getFullYear()}`;
-    },
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.split(' ');
+            if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+            return name.substring(0, 2).toUpperCase();
+        }
 
-    sair() {
-        if (!confirm('Deseja sair? Seus dados serão mantidos.')) return;
-        
-        this.go('s-login');
-        setTimeout(() => location.reload(), 500);
-    },
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenName).classList.add('active');
+            
+            if (screenName === 'radar') loadUsers();
+            if (screenName === 'conversations') loadConversations();
+            if (screenName === 'vault') loadVault();
+            if (screenName === 'profile') updateProfileDisplay();
+        }
 
-    go(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        function updateProfileDisplay() {
+            const photo = localStorage.getItem('bumerProfilePhoto');
+            const display = document.getElementById('profilePhotoDisplay');
+            
+            if (photo) {
+                display.innerHTML = `<img src="${photo}" class="profile-photo">`;
+            } else {
+                const color = getAvatarColor(currentUser?.name);
+                const initials = getInitials(currentUser?.name);
+                display.innerHTML = `<div class="profile-avatar" style="background:${color}">${initials}</div>`;
+            }
+            
+            document.getElementById('profileName').textContent = currentUser?.name || 'Nome';
+        }
 
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        // Splash Screen
+        setTimeout(() => {
+            const savedUser = localStorage.getItem('bumerUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showScreen('radar');
+            } else {
+                showScreen('signup');
+            }
+        }, 2000);
 
-        if (id === 's-radar') { this.loadRadar(); }
-        if (id === 's-convs') { this.updConvs(); }
-        if (id === 's-bau') { this.updBau(); }
-        if (id === 's-perfil') { this.loadPerfil(); }
-    }
-};
+        // Signup
+        async function handleSignup() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (!name) {
+                alert('Por favor, digite seu nome!');
+                return;
+            }
 
-window.addEventListener('DOMContentLoaded', () => app.init());
-</script>
+            const { collection, addDoc, serverTimestamp } = window.firestoreModules;
+            const photo = localStorage.getItem('bumerProfilePhoto');
+            
+            try {
+                const docRef = await addDoc(collection(window.db, 'users'), {
+                    name,
+                    profilePhoto: photo || null,
+                    createdAt: serverTimestamp()
+                });
+                
+                currentUser = { id: docRef.id, name, profilePhoto: photo };
+                localStorage.setItem('bumerUser', JSON.stringify(currentUser));
+                showScreen('radar');
+            } catch (error) {
+                console.error('Erro ao cadastrar:', error);
+                alert('Erro ao cadastrar. Tente novamente.');
+            }
+        }
 
-</body>
-</html>
+        // Photo Upload
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const photoData = reader.result;
+                localStorage.setItem('bumerProfilePhoto', photoData);
+                
+                if (currentUser) {
+                    const { doc, updateDoc } = window.firestoreModules;
+                    try {
+                        await updateDoc(doc(window.db, 'users', currentUser.id), {
+                            profilePhoto: photoData
+                        });
+                        currentUser.profilePhoto = photoData;
+                        localStorage.setItem('bumerUser', JSON.stringify(currentUser));
+                        updateProfileDisplay();
+                    } catch (error) {
+                        console.error('Erro ao atualizar foto:', error);
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Load Users (Radar)
+        function loadUsers() {
+            if (!currentUser) return;
+            
+            const { collection, onSnapshot } = window.firestoreModules;
+            
+            if (usersListener) usersListener();
+            
+            usersListener = onSnapshot(collection(window.db, 'users'), (snapshot) => {
+                const users = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter(user => user.id !== currentUser.id);
+                
+                const grid = document.getElementById('radarGrid');
+                grid.innerHTML = '';
+                
+                users.forEach(user => {
+                    const card = document.createElement('div');
+                    card.className = 'user-card';
+                    card.onclick = () => handleConnect(user);
+                    
+                    let photoHTML;
+                    if (user.profilePhoto) {
+                        photoHTML = `<img src="${user.profilePhoto}" class="user-photo">`;
+                    } else {
+                        const color = getAvatarColor(user.name);
+                        const initials = getInitials(user.name);
+                        photoHTML = `<div class="user-avatar" style="background:${color}">${initials}</div>`;
+                    }
+                    
+                    card.innerHTML = `
+                        ${photoHTML}
+                        <div class="user-info">
+                            <p class="font-bold">${user.name}</p>
+                            <div class="user-icons">
+                                <div class="icon-dot" style="background:#06FFA5"></div>
+                                <div class="icon-dot" style="background:#FFD700"></div>
+                                <div class="icon-dot" style="background:#4CC9F0"></div>
+                                <div class="icon-dot" style="background:#FF4D8F"></div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        // Connect with User
+        async function handleConnect(targetUser) {
+            const { collection, query, where, getDocs, addDoc, serverTimestamp } = window.firestoreModules;
+            
+            try {
+                // Check existing connection
+                const q = query(
+                    collection(window.db, 'connections'),
+                    where('users', 'array-contains', currentUser.id)
+                );
+                const snapshot = await getDocs(q);
+                
+                let existingConn = null;
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.users.includes(targetUser.id)) {
+                        existingConn = { id: doc.id, ...data };
+                    }
+                });
+                
+                if (existingConn && existingConn.status === 'active') {
+                    currentChat = { ...existingConn, otherUser: targetUser };
+                    showScreen('chat');
+                    loadChat();
+                    return;
+                }
+                
+                // Create new connection
+                const docRef = await addDoc(collection(window.db, 'connections'), {
+                    users: [currentUser.id, targetUser.id],
+                    status: 'active',
+                    vault_added_by: null,
+                    vault_expires_at: null,
+                    createdAt: serverTimestamp()
+                });
+                
+                currentChat = {
+                    id: docRef.id,
+                    users: [currentUser.id, targetUser.id],
+                    status: 'active',
+                    otherUser: targetUser
+                };
+                
+                showScreen('chat');
+                loadChat();
+            } catch (error) {
+                console.error('Erro ao conectar:', error);
+                alert('Erro ao conectar. Tente novamente.');
+            }
+        }
+
+        // Load Conversations
+        function loadConversations() {
+            if (!currentUser) return;
+            
+            const { collection, query, where, onSnapshot, getDocs } = window.firestoreModules;
+            
+            if (connectionsListener) connectionsListener();
+            
+            const q = query(
+                collection(window.db, 'connections'),
+                where('users', 'array-contains', currentUser.id)
+            );
+            
+            connectionsListener = onSnapshot(q, async (snapshot) => {
+                const connections = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter(conn => conn.status === 'active');
+                
+                const list = document.getElementById('convList');
+                
+                if (connections.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">💬</div>
+                            <p>Nenhuma conversa ainda</p>
+                            <p style="font-size:14px;margin-top:8px;">Vá ao Radar para conectar!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Get all users
+                const usersSnapshot = await getDocs(collection(window.db, 'users'));
+                const users = {};
+                usersSnapshot.docs.forEach(doc => {
+                    users[doc.id] = { id: doc.id, ...doc.data() };
+                });
+                
+                list.innerHTML = '';
+                connections.forEach(conn => {
+                    const otherUserId = conn.users.find(id => id !== currentUser.id);
+                    const otherUser = users[otherUserId];
+                    if (!otherUser) return;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'conv-item';
+                    item.onclick = () => {
+                        currentChat = { ...conn, otherUser };
+                        showScreen('chat');
+                        loadChat();
+                    };
+                    
+                    let avatarHTML;
+                    if (otherUser.profilePhoto) {
+                        avatarHTML = `<img src="${otherUser.profilePhoto}" class="conv-avatar">`;
+                    } else {
+                        const color = getAvatarColor(otherUser.name);
+                        const initials = getInitials(otherUser.name);
+                        avatarHTML = `<div class="avatar-circle" style="background:${color}">${initials}</div>`;
+                    }
+                    
+                    item.innerHTML = `
+                        ${avatarHTML}
+                        <div>
+                            <p class="font-bold">${otherUser.name}</p>
+                            <p class="text-gray" style="font-size:14px;">Toque para conversar</p>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        // Load Chat
+        function loadChat() {
+            if (!currentChat) return;
+            
+            const { collection, query, where, orderBy, onSnapshot } = window.firestoreModules;
+            
+            // Update header
+            const otherUser = currentChat.otherUser;
+            document.getElementById('chatUserName').textContent = otherUser.name;
+            
+            let avatarHTML;
+            if (otherUser.profilePhoto) {
+                avatarHTML = `<img src="${otherUser.profilePhoto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">`;
+            } else {
+                const color = getAvatarColor(otherUser.name);
+                const initials = getInitials(otherUser.name);
+                avatarHTML = `<div style="width:40px;height:40px
