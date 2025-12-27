@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bumer</title>
     <style>
-        /* MANTIVE TODO O SEU CSS ORIGINAL AQUI */
+        /* MANTIVE TODO O SEU CSS ORIGINAL */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
         #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
@@ -111,6 +111,13 @@
         currChatId: null,
         unsubscribe: null,
 
+        // FUNÇÃO DE ALERTA (VIBRAR E SOM)
+        alertar() {
+            if (navigator.vibrate) navigator.vibrate(200);
+            const som = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+            som.play().catch(e => console.log("Aguardando interação"));
+        },
+
         async init() {
             const u = localStorage.getItem('bumer_user');
             if (u) {
@@ -158,8 +165,21 @@
             if (this.unsubscribe) this.unsubscribe();
             const chatId = [this.user.id, this.currChatId].sort().join("_");
             const q = query(collection(db, "chats", chatId, "msgs"), orderBy("t", "asc"));
+            
             this.unsubscribe = onSnapshot(q, (s) => {
                 const el = document.getElementById('ms');
+                
+                // Lógica para vibrar e tocar som apenas em mensagens NOVAS e RECEBIDAS
+                s.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const m = change.doc.data();
+                        // Se a mensagem não é minha, vibra e toca som
+                        if (m.sid !== this.user.id) {
+                            this.alertar();
+                        }
+                    }
+                });
+
                 el.innerHTML = "";
                 s.forEach(d => {
                     const m = d.data();
