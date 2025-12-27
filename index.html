@@ -3,194 +3,844 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bumer App</title>
+    <title>Bumer - Conexões Reais</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF8C42'/%3E%3Cstop offset='33%25' style='stop-color:%23FF4D8F'/%3E%3Cstop offset='66%25' style='stop-color:%239D4EDD'/%3E%3Cstop offset='100%25' style='stop-color:%234CC9F0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50,100 Q30,60 70,40 L130,60 Q170,80 150,120 L100,140 Q80,150 70,130 Z' fill='url(%23g)' stroke='white' stroke-width='4'/%3E%3Ccircle cx='100' cy='100' r='20' fill='white'/%3E%3Ccircle cx='95' cy='95' r='3' fill='%23FF4D8F'/%3E%3Ccircle cx='100' cy='95' r='3' fill='%23FF4D8F'/%3E%3Ccircle cx='105' cy='95' r='3' fill='%23FF4D8F'/%3E%3C/svg%3E">
     <style>
-        :root {
-            --primary: #FF4D8F;
-            --gradient: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD);
-            --bg: #F8F9FB;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            overflow: hidden;
         }
 
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', Arial, sans-serif; background: #000; color: #333; overflow: hidden; }
-        
-        /* Container que simula o Celular no PC */
-        #main-container { width: 100%; max-width: 414px; height: 100%; background: var(--bg); margin: 0 auto; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        #app-container {
+            max-width: 414px;
+            height: 100vh;
+            margin: 0 auto;
+            background: #F8F9FB;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
 
-        /* Sistema de Telas */
-        .page { display: none; width: 100%; height: 100%; flex-direction: column; position: absolute; top: 0; left: 0; }
-        .page.active { display: flex !important; }
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            background: white;
+        }
 
-        /* Estilo da Logo */
-        .brand-logo { font-size: 32px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin: 20px 0; }
+        .screen.active {
+            display: flex !important;
+        }
 
-        /* Tela de Cadastro */
-        .login-box { padding: 40px 20px; text-align: center; }
-        .input-style { width: 90%; padding: 15px; margin: 10px 0; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; }
-        .btn-ready { background: var(--gradient); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 90%; font-size: 16px; }
+        /* LOGO */
+        .logo-text {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 2px;
+        }
 
-        /* Radar (Grid de Fotos) */
-        .top-bar { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: var(--primary); }
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; overflow-y: auto; flex: 1; padding-bottom: 90px; }
-        .user-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; cursor: pointer; }
-        .user-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
-        .user-name { padding: 8px 12px; font-weight: bold; font-size: 14px; }
-        .bumer-icon-btn { position: absolute; right: 8px; bottom: 35px; background: var(--gradient); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; font-size: 16px; }
+        /* CADASTRO */
+        .login-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 30px;
+            text-align: center;
+        }
 
-        /* Chat */
-        .chat-area { flex: 1; padding: 15px; overflow-y: auto; background: #E5DDD5; display: flex; flex-direction: column; gap: 8px; }
-        .msg-bubble { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
-        .msg-in { background: white; align-self: flex-start; }
-        .msg-out { background: #DCF8C6; align-self: flex-end; border: 1px solid #ddd; }
-        .chat-input-row { background: white; padding: 10px; display: flex; gap: 10px; align-items: center; }
-        .chat-input-row input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
+        .subtitle {
+            color: #666;
+            margin: 10px 0 30px;
+            font-size: 16px;
+        }
 
-        /* Menu Inferior */
-        .nav-menu { position: absolute; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #eee; z-index: 100; }
-        .nav-link { background: none; border: none; font-size: 24px; color: #ccc; cursor: pointer; }
-        .nav-link.active-link { color: var(--primary); }
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            margin: 10px 0;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
 
-        /* Tela Baú */
-        .bau-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #888; padding: 30px; }
+        .input-field:focus {
+            border-color: #FF4D8F;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD, #4CC9F0);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-weight: 700;
+            font-size: 20px;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* RADAR GRID */
+        .radar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .grid-pessoas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card-pessoa {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .card-pessoa:active {
+            transform: scale(0.95);
+        }
+
+        .card-foto {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 12px;
+        }
+
+        .card-nome {
+            font-weight: 700;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .card-idade {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .btn-bumer {
+            position: absolute;
+            bottom: 50px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF4D8F, #9D4EDD);
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        /* CHAT */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .btn-voltar {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            margin-right: 15px;
+        }
+
+        .chat-user-name {
+            flex: 1;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .btn-bau {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #E5DDD5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            word-wrap: break-word;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: #DCF8C6;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: white;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #F0F0F0;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            background: white;
+        }
+
+        .btn-enviar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF4D8F, #9D4EDD);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* BAÚ */
+        .bau-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .bau-vazio {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .bau-vazio-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .bau-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .bau-foto {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            filter: grayscale(100%) opacity(0.6);
+        }
+
+        .bau-nome {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .bau-timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FF4D8F;
+            margin: 15px 0;
+        }
+
+        .bau-status {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .btn-resgatar {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #E0E0E0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.active {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        /* LISTA DE CONVERSAS */
+        .conversas-lista {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .conversa-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .conversa-item:active {
+            background: #F5F5F5;
+        }
+
+        .conversa-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .conversa-info {
+            flex: 1;
+        }
+
+        .conversa-nome {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .conversa-preview {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .lista-vazia {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
 
-<div id="main-container">
+<div id="app-container">
     
-    <div id="tela-login" class="page active">
-        <div class="login-box">
-            <div class="brand-logo">BUMER</div>
-            <p>Conecte e receba de volta</p>
-            <input type="text" id="campo-nome" class="input-style" placeholder="Seu Nome">
-            <button class="btn-ready" onclick="entrarNoApp()">ENTRAR AGORA</button>
+    <!-- TELA DE CADASTRO -->
+    <div id="screen-login" class="screen active">
+        <div class="login-container">
+            <div class="logo-text">BUMER</div>
+            <p class="subtitle">Conexões reais, sem pressão</p>
+            <input type="text" id="input-nome" class="input-field" placeholder="Seu nome">
+            <button class="btn-primary" onclick="app.entrar()">ENTRAR NO BUMER</button>
         </div>
     </div>
 
-    <div id="tela-radar" class="page">
+    <!-- TELA RADAR -->
+    <div id="screen-radar" class="screen">
         <div class="top-bar">RADAR</div>
-        <div class="photo-grid" id="lista-pessoas">
+        <div class="radar-content">
+            <div class="grid-pessoas" id="grid-radar"></div>
+        </div>
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="app.irPara('screen-radar')">🧭</button>
+            <button class="nav-btn" onclick="app.irPara('screen-conversas')">💬</button>
+            <button class="nav-btn" onclick="app.irPara('screen-bau')">📦</button>
+        </div>
+    </div>
+
+    <!-- TELA DE CONVERSAS -->
+    <div id="screen-conversas" class="screen">
+        <div class="top-bar">CONVERSAS</div>
+        <div class="conversas-lista" id="lista-conversas">
+            <div class="lista-vazia">
+                <div style="font-size: 60px; margin-bottom: 15px;">💬</div>
+                <h3>Nenhuma conversa ainda</h3>
+                <p style="margin-top: 10px;">Vá ao Radar e conecte-se!</p>
             </div>
-        <div class="nav-menu">
-            <button class="nav-link active-link" onclick="irPara('tela-radar')">🧭</button>
-            <button class="nav-link" onclick="irPara('tela-chat-lista')">💬</button>
-            <button class="nav-link" onclick="irPara('tela-bau')">📦</button>
+        </div>
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="app.irPara('screen-radar')">🧭</button>
+            <button class="nav-btn active" onclick="app.irPara('screen-conversas')">💬</button>
+            <button class="nav-btn" onclick="app.irPara('screen-bau')">📦</button>
         </div>
     </div>
 
-    <div id="tela-chat-aberto" class="page">
-        <div class="top-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px;">
-            <button onclick="irPara('tela-radar')" style="border:0; background:0; font-size:20px;">←</button>
-            <span id="nome-chat">Conversa</span>
-            <div style="width:20px;"></div>
+    <!-- TELA DE CHAT -->
+    <div id="screen-chat" class="screen">
+        <div class="chat-header">
+            <button class="btn-voltar" onclick="app.irPara('screen-conversas')">←</button>
+            <span class="chat-user-name" id="chat-nome">Chat</span>
+            <button class="btn-bau" onclick="app.enviarParaBau()">🪃</button>
         </div>
-        <div class="chat-area" id="caixa-mensagens"></div>
-        <div class="chat-input-row">
-            <input type="text" id="texto-msg" placeholder="Diga algo...">
-            <button onclick="mandarMensagem()" style="background:var(--primary); color:white; border:0; border-radius:50%; width:35px; height:35px;">✈️</button>
+        <div class="chat-messages" id="chat-msgs"></div>
+        <div class="chat-input-bar">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Digite uma mensagem...">
+            <button class="btn-enviar" onclick="app.enviarMsg()">✈️</button>
         </div>
     </div>
 
-    <div id="tela-bau" class="page">
+    <!-- TELA DO BAÚ -->
+    <div id="screen-bau" class="screen">
         <div class="top-bar">MEU BAÚ</div>
-        <div class="bau-content">
-            <div style="font-size: 60px;">📦</div>
-            <h3>Seu Baú está vazio</h3>
-            <p>Quando alguém te der um bumerangue de volta, ele aparecerá aqui!</p>
+        <div class="bau-container" id="bau-lista">
+            <div class="bau-vazio">
+                <div class="bau-vazio-icon">📦</div>
+                <h3>Baú vazio</h3>
+                <p style="margin-top: 10px;">Pessoas bloqueadas por 5 dias aparecerão aqui</p>
+            </div>
         </div>
-        <div class="nav-menu">
-            <button class="nav-link" onclick="irPara('tela-radar')">🧭</button>
-            <button class="nav-link" onclick="irPara('tela-chat-lista')">💬</button>
-            <button class="nav-link active-link" onclick="irPara('tela-bau')">📦</button>
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="app.irPara('screen-radar')">🧭</button>
+            <button class="nav-btn" onclick="app.irPara('screen-conversas')">💬</button>
+            <button class="nav-btn active" onclick="app.irPara('screen-bau')">📦</button>
         </div>
     </div>
 
 </div>
 
 <script>
-    // 1. Função de Navegação - TROCA DE TELAS
-    function irPara(idTela) {
-        console.log("Indo para: " + idTela);
-        // Esconde todas as telas
-        const telas = document.getElementsByClassName('page');
-        for (let i = 0; i < telas.length; i++) {
-            telas[i].classList.remove('active');
-        }
-        // Mostra a tela desejada
-        document.getElementById(idTela).classList.add('active');
-    }
+const app = {
+    usuario: null,
+    chatAtual: null,
+    conexoes: [],
 
-    // 2. Função de Entrar
-    function entrarNoApp() {
-        const nome = document.getElementById('campo-nome').value;
-        if(nome === "") {
-            alert("Por favor, digite seu nome!");
+    init() {
+        // Verificar se já tem usuário salvo
+        const salvo = localStorage.getItem('bumer_user');
+        if (salvo) {
+            this.usuario = JSON.parse(salvo);
+            this.carregarDados();
+            this.irPara('screen-radar');
+        }
+
+        // Enter no input de mensagem
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.enviarMsg();
+        });
+
+        // Verificar baú a cada minuto
+        setInterval(() => this.verificarBau(), 60000);
+    },
+
+    entrar() {
+        const nome = document.getElementById('input-nome').value.trim();
+        if (!nome) {
+            alert('Digite seu nome!');
             return;
         }
-        carregarPessoas();
-        irPara('tela-radar');
-    }
 
-    // 3. Gerar a lista de pessoas (Grid igual à sua foto)
-    function carregarPessoas() {
-        const dados = [
-            {n: 'Mariana', f: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300'},
-            {n: 'Ricardo', f: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300'},
-            {n: 'Ana', f: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300'},
-            {n: 'Pedro', f: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
+        this.usuario = {
+            id: Date.now().toString(),
+            nome: nome,
+            criadoEm: Date.now()
+        };
+
+        localStorage.setItem('bumer_user', JSON.stringify(this.usuario));
+        this.carregarDados();
+        this.carregarRadar();
+        this.irPara('screen-radar');
+    },
+
+    carregarDados() {
+        const dados = localStorage.getItem('bumer_conexoes');
+        this.conexoes = dados ? JSON.parse(dados) : [];
+    },
+
+    salvarDados() {
+        localStorage.setItem('bumer_conexoes', JSON.stringify(this.conexoes));
+    },
+
+    carregarRadar() {
+        const pessoas = [
+            { id: 1, nome: 'Ana Silva', idade: 24, foto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400' },
+            { id: 2, nome: 'Carlos Lima', idade: 27, foto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' },
+            { id: 3, nome: 'Julia Santos', idade: 23, foto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' },
+            { id: 4, nome: 'Pedro Costa', idade: 29, foto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400' },
+            { id: 5, nome: 'Maria Souza', idade: 25, foto: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400' },
+            { id: 6, nome: 'Lucas Alves', idade: 26, foto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400' }
         ];
+
+        const grid = document.getElementById('grid-radar');
+        grid.innerHTML = pessoas.map(p => `
+            <div class="card-pessoa" onclick="app.conectar(${p.id}, '${p.nome}', '${p.foto}')">
+                <img src="${p.foto}" class="card-foto" alt="${p.nome}">
+                <div class="btn-bumer">🪃</div>
+                <div class="card-info">
+                    <div class="card-nome">${p.nome}</div>
+                    <div class="card-idade">${p.idade} anos</div>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    conectar(id, nome, foto) {
+        // Verificar se já está conectado
+        const existe = this.conexoes.find(c => c.id === id && !c.noBau);
+        if (existe) {
+            this.abrirChat(id);
+            return;
+        }
+
+        // Criar nova conexão
+        const novaConexao = {
+            id: id,
+            nome: nome,
+            foto: foto,
+            mensagens: [],
+            criadaEm: Date.now(),
+            noBau: false
+        };
+
+        this.conexoes.push(novaConexao);
+        this.salvarDados();
         
-        let htmlGrid = "";
-        dados.forEach(pessoa => {
-            htmlGrid += `
-                <div class="user-card" onclick="abrirConversa('${pessoa.n}')">
-                    <img src="${pessoa.f}">
-                    <div class="bumer-icon-btn">🪃</div>
-                    <div class="user-name">${pessoa.n}</div>
+        alert(`🎉 Conectado com ${nome}!`);
+        this.atualizarConversas();
+        this.abrirChat(id);
+    },
+
+    atualizarConversas() {
+        const lista = document.getElementById('lista-conversas');
+        const conversasAtivas = this.conexoes.filter(c => !c.noBau);
+
+        if (conversasAtivas.length === 0) {
+            lista.innerHTML = `
+                <div class="lista-vazia">
+                    <div style="font-size: 60px; margin-bottom: 15px;">💬</div>
+                    <h3>Nenhuma conversa ainda</h3>
+                    <p style="margin-top: 10px;">Vá ao Radar e conecte-se!</p>
                 </div>
             `;
+            return;
+        }
+
+        lista.innerHTML = conversasAtivas.map(c => {
+            const ultimaMsg = c.mensagens.length > 0 
+                ? c.mensagens[c.mensagens.length - 1].texto 
+                : 'Diga olá!';
+            
+            return `
+                <div class="conversa-item" onclick="app.abrirChat(${c.id})">
+                    <img src="${c.foto}" class="conversa-avatar" alt="${c.nome}">
+                    <div class="conversa-info">
+                        <div class="conversa-nome">${c.nome}</div>
+                        <div class="conversa-preview">${ultimaMsg.substring(0, 35)}...</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    abrirChat(id) {
+        const conexao = this.conexoes.find(c => c.id === id);
+        if (!conexao) return;
+
+        this.chatAtual = conexao;
+        document.getElementById('chat-nome').textContent = conexao.nome;
+        
+        this.carregarMensagens();
+        this.irPara('screen-chat');
+    },
+
+    carregarMensagens() {
+        const container = document.getElementById('chat-msgs');
+        
+        if (!this.chatAtual.mensagens || this.chatAtual.mensagens.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <p style="font-size: 40px; margin-bottom: 10px;">👋</p>
+                    <p>Comece a conversa!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = this.chatAtual.mensagens.map(m => `
+            <div class="message ${m.enviada ? 'sent' : 'received'}">
+                ${m.texto}
+            </div>
+        `).join('');
+
+        container.scrollTop = container.scrollHeight;
+    },
+
+    enviarMsg() {
+        const input = document.getElementById('chat-input');
+        const texto = input.value.trim();
+        
+        if (!texto || !this.chatAtual) return;
+
+        this.chatAtual.mensagens.push({
+            texto: texto,
+            enviada: true,
+            timestamp: Date.now()
         });
-        document.getElementById('lista-pessoas').innerHTML = htmlGrid;
-    }
 
-    // 4. Abrir Chat
-    function abrirConversa(nome) {
-        document.getElementById('nome-chat').innerText = nome;
-        document.getElementById('caixa-mensagens').innerHTML = `
-            <div class="msg-bubble msg-in">Oi! Vi que você me mandou um Bumerangue. Tudo bem?</div>
-        `;
-        irPara('tela-chat-aberto');
-    }
-
-    // 5. Enviar Mensagem
-    function mandarMensagem() {
-        const input = document.getElementById('texto-msg');
-        if(input.value === "") return;
-
-        const caixa = document.getElementById('caixa-mensagens');
-        
-        // Minha mensagem
-        const minhaMsg = document.createElement('div');
-        minhaMsg.className = 'msg-bubble msg-out';
-        minhaMsg.innerText = input.value;
-        caixa.appendChild(minhaMsg);
-        
-        input.value = ""; // limpa campo
-        caixa.scrollTop = caixa.scrollHeight; // rola pra baixo
+        this.salvarDados();
+        input.value = '';
+        this.carregarMensagens();
 
         // Resposta automática
         setTimeout(() => {
-            const resposta = document.createElement('div');
-            resposta.className = 'msg-bubble msg-in';
-            resposta.innerText = "Que legal! Vamos marcar algo?";
-            caixa.appendChild(resposta);
-            caixa.scrollTop = caixa.scrollHeight;
-        }, 1500);
-    }
+            const respostas = [
+                'Que legal! 😊',
+                'Interessante!',
+                'Concordo totalmente!',
+                'Haha adorei! 😄',
+                'Me conta mais!',
+                'Também penso assim!'
+            ];
+            
+            this.chatAtual.mensagens.push({
+                texto: respostas[Math.floor(Math.random() * respostas.length)],
+                enviada: false,
+                timestamp: Date.now()
+            });
 
-    // Vincular o Enter do teclado para enviar mensagem
-    document.getElementById('texto-msg').addEventListener('keypress', function(e) {
-        if(e.key === 'Enter') mandarMensagem();
-    });
+            this.salvarDados();
+            this.carregarMensagens();
+        }, 1500);
+    },
+
+    enviarParaBau() {
+        if (!this.chatAtual) return;
+
+        const noBau = this.conexoes.filter(c => c.noBau).length;
+        if (noBau >= 5) {
+            alert('⚠️ Você já tem 5 pessoas no baú!');
+            return;
+        }
+
+        const confirmar = confirm(
+            `Enviar ${this.chatAtual.nome} para o baú?\n\n` +
+            `• Bloqueado por 5 dias\n` +
+            `• Se não resgatar, será excluído`
+        );
+
+        if (!confirmar) return;
+
+        this.chatAtual.noBau = true;
+        this.chatAtual.bauInicio = Date.now();
+        this.chatAtual.bauFim = Date.now() + (5 * 24 * 60 * 60 * 1000);
+
+        this.salvarDados();
+        alert(`📦 ${this.chatAtual.nome} foi enviado(a) para o baú!`);
+        
+        this.atualizarConversas();
+        this.atualizarBau();
+        this.irPara('screen-conversas');
+    },
+
+    atualizarBau() {
+        const lista = document.getElementById('bau-lista');
+        const noBau = this.conexoes.filter(c => c.noBau);
+
+        if (noBau.length === 0) {
+            lista.innerHTML = `
+                <div class="bau-vazio">
+                    <div class="bau-vazio-icon">📦</div>
+                    <h3>Baú vazio</h3>
+                    <p style="margin-top: 10px;">Pessoas bloqueadas por 5 dias aparecerão aqui</p>
+                </div>
+            `;
+            return;
+        }
+
+        lista.innerHTML = noBau.map(c => {
+            const tempoRestante = this.calcularTempo(c.bauFim);
+            return `
+                <div class="bau-item">
+                    <img src="${c.foto}" class="bau-foto" alt="${c.nome}">
+                    <div class="bau-nome">${c.nome}</div>
+                    <div class="bau-timer">${tempoRestante}</div>
+                    <div class="bau-status">Chat bloqueado</div>
+                    <button class="btn-resgatar" onclick="app.resgatar(${c.id})">
+                        Resgatar Agora
+                    </button>
+                </div>
+            `;
+        }).join('');
+    },
+
+    calcularTempo(fim) {
+        const diff = fim - Date.now();
+        if (diff <= 0) return '0d 0h 0m';
+
+        const dias = Math.floor(diff / (24 * 60 * 60 * 1000));
+        const horas = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutos = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+
+        return `${dias}d ${horas}h ${minutos}m`;
+    },
+
+    resgatar(id) {
+        const conexao = this.conexoes.find(c => c.id === id);
+        if (!conexao) return;
+
+        conexao.noBau = false;
+        conexao.bauInicio = null;
+        conexao.bauFim = null;
+
+        this.salvarDados();
+        alert(`✅ ${conexao.nome} foi resgatado(a)!`);
+        
+        this.atualizarBau();
+        this.atualizarConversas();
+    },
+
+    verificarBau() {
+        const agora = Date.now();
+        let removidos = false;
+
+        this.conexoes = this.conexoes.filter(c => {
+            if (c.noBau && c.bauFim && agora >= c.bauFim) {
+                removidos = true;
+                return false;
+            }
+            return true;
+        });
+
+        if (removidos) {
+            this.salvarDados();
+            this.atualizarBau();
+            this.atualizarConversas();
+            alert('⏰ Conexões expiradas foram removidas!');
+        }
+    },
+
+    irPara(telaId) {
+        // Esconder todas
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+        });
+
+        // Mostrar a selecionada
+        document.getElementById(telaId).classList.add('active');
+
+        // Atualizar navegação
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Carregar conteúdo
+        if (telaId === 'screen-radar') {
+            this.carregarRadar();
+        } else if (telaId === 'screen-conversas') {
+            this.atualizarConversas();
+        } else if (telaId === 'screen-bau') {
+            this.atualizarBau();
+        }
+    }
+};
+
+// Iniciar app quando carregar
+window.addEventListener('DOMContentLoaded', () => app.init());
 </script>
 
 </body>
