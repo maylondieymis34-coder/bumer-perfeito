@@ -10,16 +10,16 @@
         #app { width: 100%; height: 100%; background: #F5F5F5; position: relative; }
         .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
         .screen.active { display: flex !important; }
-        .logo { font-size: 42px; font-weight: 900; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; }
+        .logo { font-size: 42px; font-weight: 900; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; padding: 20px; }
         .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
         .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
-        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; }
+        .btn { width: 100%; padding: 18px; margin-top: 20px; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 700; cursor: pointer; }
         .header { background: white; padding: 20px; text-align: center; font-weight: 700; font-size: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-shrink: 0; position: relative; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        /* RADAR COM CORES NEON */
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; }
+        /* CARD E EFEITO NEON */
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; transition: 0.3s; }
         .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
         .has-msg { animation: neonAlert 0.8s infinite alternate; }
         @keyframes neonAlert {
@@ -27,21 +27,20 @@
             100% { border-color: #FF0000; box-shadow: 0 0 15px #FF0000; }
         }
 
-        /* CHAT E MENSAGENS */
+        /* CHAT */
         .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #E5DDD5; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 8px 12px; border-radius: 15px; font-size: 16px; position: relative; cursor: pointer; }
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; word-wrap: break-word; }
         .msg.sent { align-self: flex-end; background: #DCF8C6; }
         .msg.recv { align-self: flex-start; background: white; }
-        
-        /* STATUS DA MENSAGEM (VISTO) */
-        .status { font-size: 12px; margin-left: 5px; color: #999; }
-        .visto { color: #34B7F1 !important; } /* Azul igual Whats */
+        .status { font-size: 12px; margin-left: 5px; color: #999; vertical-align: bottom; }
+        .visto { color: #34B7F1 !important; }
 
         .input-bar { display: flex; padding: 10px; background: #F0F0F0; gap: 10px; }
         .input-msg { flex: 1; padding: 12px; border-radius: 20px; border: none; outline: none; }
         .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #ddd; }
-        .nav-btn { background: none; border: none; font-size: 24px; opacity: 0.4; }
+        .nav-btn { background: none; border: none; font-size: 24px; opacity: 0.4; cursor: pointer; }
         .nav-btn.active { opacity: 1; }
+        .foto-perfil { width: 120px; height: 120px; border-radius: 60px; object-fit: cover; margin: 20px auto; display: block; border: 3px solid #FF4D8F; }
     </style>
 </head>
 <body>
@@ -56,7 +55,7 @@
     </div>
 
     <div id="s-radar" class="screen">
-        <div class="header">RADAR <button style="position:absolute;right:20px;border:none;background:none;font-size:28px" onclick="app.go('s-perfil')">👤</button></div>
+        <div class="header">RADAR <button style="position:absolute;right:20px;top:20px;border:none;background:none;font-size:28px" onclick="app.go('s-perfil')">👤</button></div>
         <div class="content"><div class="grid" id="grid"></div></div>
         <div class="nav">
             <button class="nav-btn active" onclick="app.go('s-radar')">🧭</button>
@@ -65,9 +64,9 @@
     </div>
 
     <div id="s-chat" class="screen">
-        <div class="chat-header" style="background:white;padding:15px;display:flex;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.1)">
-            <button onclick="app.go('s-radar')" style="border:none;background:none;font-size:24px;margin-right:10px">←</button>
-            <span id="cn" style="font-weight:bold"></span>
+        <div class="header" style="display:flex; align-items:center; justify-content: flex-start; padding: 10px 20px;">
+            <button onclick="app.go('s-radar')" style="border:none;background:none;font-size:24px;margin-right:15px">←</button>
+            <span id="cn"></span>
         </div>
         <div class="msgs" id="ms"></div>
         <div class="input-bar">
@@ -80,13 +79,16 @@
         <div class="header">MEU PERFIL</div>
         <div style="text-align:center; padding: 20px;">
             <div id="fp"></div>
-            <h2 id="np"></h2>
+            <h2 id="np" style="margin-bottom:20px"></h2>
             <input type="file" id="file-input" style="display:none" accept="image/*">
-            <button class="btn" onclick="document.getElementById('file-input').click()">Mudar Foto</button>
+            <button class="btn" style="width:auto; padding:10px 20px;" onclick="document.getElementById('file-input').click()">Mudar Foto</button>
             <br><br>
-            <button class="btn" style="background:red" onclick="app.sair()">Sair</button>
+            <button class="btn" style="background:red; width:auto; padding:10px 20px;" onclick="app.sair()">Sair da Conta</button>
         </div>
-        <div class="nav"><button class="nav-btn" onclick="app.go('s-radar')">🧭</button><button class="nav-btn active" onclick="app.go('s-perfil')">👤</button></div>
+        <div class="nav">
+            <button class="nav-btn" onclick="app.go('s-radar')">🧭</button>
+            <button class="nav-btn active" onclick="app.go('s-perfil')">👤</button>
+        </div>
     </div>
 </div>
 
@@ -107,16 +109,17 @@
     const db = getFirestore(fbApp);
 
     window.app = {
-        user: null, currChatId: null,
+        user: null, currChatId: null, unsubscribe: null,
+
         alertar() {
-            if (navigator.vibrate) navigator.vibrate(200); [cite: 2025-12-27]
-            new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{}); [cite: 2025-12-27]
+            if (navigator.vibrate) navigator.vibrate(200);
+            new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{});
         },
 
         async login() {
             const n = document.getElementById('nome').value.trim();
-            if (!n) return alert('Nome!');
-            this.user = { id: "u_" + Date.now(), nome: n, foto: '' };
+            if (!n) return alert('Digite seu nome!');
+            this.user = { id: "u_" + Date.now(), nome: n, foto: '', criado: Date.now() };
             await setDoc(doc(db, "usuarios", this.user.id), this.user);
             localStorage.setItem('bumer_user', JSON.stringify(this.user));
             this.go('s-radar');
@@ -124,74 +127,110 @@
 
         async loadRadar() {
             const grid = document.getElementById('grid');
+            grid.innerHTML = "Buscando...";
             const snap = await getDocs(collection(db, "usuarios"));
             grid.innerHTML = "";
             snap.forEach(d => {
                 const p = d.data();
                 if(p.id === this.user.id) return;
-                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : ''; [cite: 2025-12-27]
-                grid.innerHTML += `<div class="card ${neon}" onclick="app.openChat('${p.id}', '${p.nome}')">
-                    <img src="${p.foto || 'https://via.placeholder.com/150'}">
-                    <div style="padding:10px"><b>${p.nome}</b></div>
-                </div>`;
+                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : '';
+                grid.innerHTML += `
+                    <div class="card ${neon}" onclick="app.openChat('${p.id}', '${p.nome}')">
+                        <img src="${p.foto || 'https://via.placeholder.com/150'}">
+                        <div style="padding:10px"><b>${p.nome}</b></div>
+                    </div>`;
             });
         },
 
         async openChat(id, nome) {
             this.currChatId = id;
             document.getElementById('cn').textContent = nome;
-            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true }); [cite: 2025-12-27]
+            // Limpa o alerta neon quando abre o chat
+            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true });
             this.go('s-chat');
             this.listen();
         },
 
         listen() {
+            if (this.unsubscribe) this.unsubscribe();
             const chatId = [this.user.id, this.currChatId].sort().join("_");
             const q = query(collection(db, "chats", chatId, "msgs"), orderBy("t", "asc"));
-            onSnapshot(q, (s) => {
+            
+            this.unsubscribe = onSnapshot(q, (s) => {
                 const el = document.getElementById('ms');
+                s.docChanges().forEach(change => {
+                    if (change.type === "added" && change.doc.data().sid !== this.user.id) this.alertar();
+                });
+
                 el.innerHTML = "";
                 s.forEach(d => {
                     const m = d.data();
                     const isMe = m.sid === this.user.id;
-                    const visto = m.lido ? 'visto' : ''; [cite: 2025-12-27]
+                    const checkColor = m.lido ? 'visto' : '';
                     
-                    // Marcar como lido se eu recebi
-                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true }); [cite: 2025-12-27]
+                    // Se a mensagem não é minha e não está lida, marca como lida
+                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true });
 
-                    el.innerHTML += `<div class="msg ${isMe?'sent':'recv'}" onclick="app.delMsg('${d.id}')">
-                        ${m.txt} <span class="status ${visto}">${isMe?'✓✓':''}</span>
-                    </div>`; [cite: 2025-12-27]
+                    el.innerHTML += `
+                        <div class="msg ${isMe?'sent':'recv'}" onclick="app.deletarMsg('${d.id}')">
+                            ${m.txt}
+                            <span class="status ${checkColor}">${isMe ? '✓✓' : ''}</span>
+                        </div>`;
                 });
                 el.scrollTop = el.scrollHeight;
             });
         },
 
-        async delMsg(msgId) {
-            if(confirm("Apagar mensagem?")) { [cite: 2025-12-27]
+        async deletarMsg(msgId) {
+            if(confirm("Deseja apagar esta mensagem para você?")) {
                 const chatId = [this.user.id, this.currChatId].sort().join("_");
-                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId)); [cite: 2025-12-27]
+                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId));
             }
         },
 
         async send() {
             const i = document.getElementById('im');
-            if (!i.value.trim()) return;
+            const txt = i.value.trim();
+            if (!txt || !this.currChatId) return;
             const chatId = [this.user.id, this.currChatId].sort().join("_");
-            await addDoc(collection(db, "chats", chatId, "msgs"), { 
-                txt: i.value, sid: this.user.id, t: serverTimestamp(), lido: false 
-            }); [cite: 2025-12-27]
-            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true }); [cite: 2025-12-27]
+            
+            await addDoc(collection(db, "chats", chatId, "msgs"), {
+                txt, sid: this.user.id, t: serverTimestamp(), lido: false
+            });
+
+            // Ativa o neon para a outra pessoa
+            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true });
             i.value = "";
+        },
+
+        async upPhoto(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const img = ev.target.result;
+                await setDoc(doc(db, "usuarios", this.user.id), { foto: img }, { merge: true });
+                this.user.foto = img;
+                localStorage.setItem('bumer_user', JSON.stringify(this.user));
+                this.loadPerfil();
+            };
+            reader.readAsDataURL(file);
+        },
+
+        loadPerfil() {
+            document.getElementById('fp').innerHTML = this.user.foto ? `<img src="${this.user.foto}" class="foto-perfil">` : `<div style="width:120px;height:120px;background:#ccc;border-radius:60px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:40px;color:white">?</div>`;
+            document.getElementById('np').textContent = this.user.nome;
         },
 
         go(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if (id === 's-radar') this.loadRadar();
+            if (id === 's-perfil') this.loadPerfil();
         },
+
         sair() { localStorage.clear(); location.reload(); }
     };
+
     window.onload = () => {
         const u = localStorage.getItem('bumer_user');
         if (u) { app.user = JSON.parse(u); app.go('s-radar'); }
