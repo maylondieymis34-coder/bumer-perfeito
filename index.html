@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bumer</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bumer">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3843/3843015.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3843/3843015.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; font-family: -apple-system, sans-serif; background: #000; position: fixed; overflow: hidden; }
@@ -12,7 +20,7 @@
         .screen { display: none; width: 100%; height: 100%; position: absolute; flex-direction: column; background: #F5F5F5; }
         .screen.active { display: flex !important; }
         
-        /* Visuais Alegres */
+        /* Visuais Alegres e Chamativos */
         .logo { font-size: 42px; font-weight: 900; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg, #FF8C42, #FF4D8F, #9D4EDD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px; padding: 20px; }
         .login { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; text-align: center; }
         .input { width: 100%; padding: 18px; margin: 12px 0; border: 2px solid #DDD; border-radius: 15px; font-size: 17px; outline: none; }
@@ -22,21 +30,21 @@
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        /* Card e Bumerangue */
+        /* Card com Bumerangue e Nome Rosa */
         .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; border: 4px solid transparent; transition: 0.3s; }
         .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
         .btn-bumer { position: absolute; bottom: 45px; right: 10px; width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 5; }
         .card-info { padding: 12px; text-align: center; background: #fff; }
         .card-info b { font-family: 'Fredoka One', cursive; font-size: 18px; color: #FF4D8F; }
 
-        /* Efeito Neon Verde e Vermelho */
+        /* Neon Verde e Vermelho */
         .has-msg { animation: neonAlert 0.8s infinite alternate; }
         @keyframes neonAlert {
             0% { border-color: #39FF14; box-shadow: 0 0 15px #39FF14; }
             100% { border-color: #FF0000; box-shadow: 0 0 15px #FF0000; }
         }
 
-        /* Chat */
+        /* Chat e Visto Azul */
         .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #E5DDD5; display: flex; flex-direction: column; gap: 10px; }
         .msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; word-wrap: break-word; }
         .msg.sent { align-self: flex-end; background: #DCF8C6; }
@@ -121,8 +129,8 @@
         user: null, currChatId: null, unsubscribe: null,
 
         alertar() {
-            if (navigator.vibrate) navigator.vibrate(200);
-            new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{});
+            if (navigator.vibrate) navigator.vibrate(200); [cite: 2025-12-27]
+            new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(()=>{}); [cite: 2025-12-27]
         },
 
         async login() {
@@ -142,7 +150,7 @@
             snap.forEach(d => {
                 const p = d.data();
                 if(p.id === this.user.id) return;
-                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : '';
+                const neon = p['msg_' + this.user.id] === true ? 'has-msg' : ''; [cite: 2025-12-27]
                 grid.innerHTML += `
                     <div class="card ${neon}" onclick="app.openChat('${p.id}', '${p.nome}')">
                         <img src="${p.foto || 'https://via.placeholder.com/150'}">
@@ -155,7 +163,7 @@
         async openChat(id, nome) {
             this.currChatId = id;
             document.getElementById('cn').textContent = nome;
-            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true });
+            await setDoc(doc(db, "usuarios", this.user.id), { ['msg_'+id]: false }, { merge: true }); [cite: 2025-12-27]
             this.go('s-chat');
             this.listen();
         },
@@ -167,27 +175,27 @@
             this.unsubscribe = onSnapshot(q, (s) => {
                 const el = document.getElementById('ms');
                 s.docChanges().forEach(c => {
-                    if (c.type === "added" && c.doc.data().sid !== this.user.id) this.alertar();
+                    if (c.type === "added" && c.doc.data().sid !== this.user.id) this.alertar(); [cite: 2025-12-27]
                 });
                 el.innerHTML = "";
                 s.forEach(d => {
                     const m = d.data();
                     const isMe = m.sid === this.user.id;
-                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true });
+                    if (!isMe && !m.lido) updateDoc(doc(db, "chats", chatId, "msgs", d.id), { lido: true }); [cite: 2025-12-27]
                     el.innerHTML += `
                         <div class="msg ${isMe?'sent':'recv'}" onclick="app.deletarMsg('${d.id}')">
                             ${m.txt}
                             <span class="status ${m.lido ? 'visto' : ''}">${isMe ? '✓✓' : ''}</span>
-                        </div>`;
+                        </div>`; [cite: 2025-12-27]
                 });
                 el.scrollTop = el.scrollHeight;
             });
         },
 
         async deletarMsg(msgId) {
-            if(confirm("Apagar esta mensagem?")) {
+            if(confirm("Apagar esta mensagem?")) { [cite: 2025-12-27]
                 const chatId = [this.user.id, this.currChatId].sort().join("_");
-                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId));
+                await deleteDoc(doc(db, "chats", chatId, "msgs", msgId)); [cite: 2025-12-27]
             }
         },
 
@@ -195,8 +203,8 @@
             const i = document.getElementById('im');
             if (!i.value.trim()) return;
             const chatId = [this.user.id, this.currChatId].sort().join("_");
-            await addDoc(collection(db, "chats", chatId, "msgs"), { txt: i.value, sid: this.user.id, t: serverTimestamp(), lido: false });
-            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true });
+            await addDoc(collection(db, "chats", chatId, "msgs"), { txt: i.value, sid: this.user.id, t: serverTimestamp(), lido: false }); [cite: 2025-12-27]
+            await setDoc(doc(db, "usuarios", this.currChatId), { ['msg_'+this.user.id]: true }, { merge: true }); [cite: 2025-12-27]
             i.value = "";
         },
 
