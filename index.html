@@ -24,6 +24,10 @@
         .card img { width: 100%; height: 150px; object-fit: cover; display: block; }
         .card-info { padding: 10px; }
         .btn-bumer { position: absolute; bottom: 50px; right: 10px; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF4D8F, #9D4EDD); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
+        /* NOVO: Botão de remover pessoa */
+        .btn-remover { position: absolute; top: 10px; right: 10px; width: 35px; height: 35px; border-radius: 50%; background: rgba(255, 0, 0, 0.8); border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; cursor: pointer; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        
         .chat-header { display: flex; align-items: center; padding: 15px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .back { background: none; border: none; font-size: 24px; margin-right: 10px; }
         .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #E5DDD5; display: flex; flex-direction: column; gap: 10px; }
@@ -92,7 +96,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA4IihfRLNToQ04yZVEamFDiz4mMwMVViE",
@@ -110,12 +114,22 @@
         user: null,
         currChatId: null,
         unsubscribe: null,
+        lastMessageCount: 0, // NOVO: Controla notificações
 
-        // FUNÇÃO DE ALERTA (VIBRAR E SOM)
-        alertar() {
-            if (navigator.vibrate) navigator.vibrate(200);
-            const som = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-            som.play().catch(e => console.log("Aguardando interação"));
+        // NOVO: Função para vibrar e tocar som quando recebe mensagem
+        notificar() {
+            // Vibrar celular (200ms)
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+            
+            // Tocar som "bip"
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZizcIGWi77eefTRAMUKfj8LZjHAY4ktfyy3ksBSR3x/DdkEAKFF606+uoVRQKRp/g8r5sIQUrgc7y2Yk3CBlou+3nn00QDFCn4/C2YxwGOJLX8st5LAUkd8fw3ZBACg==');
+                audio.play().catch(() => {});
+            } catch (e) {
+                console.log('Erro ao tocar som:', e);
+            }
         },
 
         async init() {
@@ -125,6 +139,11 @@
                 this.go('s-radar');
             }
             document.getElementById('file-input').addEventListener('change', e => this.upPhoto(e));
+            
+            // NOVO: Suporte a Enter no chat
+            document.getElementById('im').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.send();
+            });
         },
 
         async login() {
@@ -140,22 +159,56 @@
         async loadRadar() {
             const grid = document.getElementById('grid');
             grid.innerHTML = "Buscando pessoas...";
+            
+            // NOVO: Carrega lista de pessoas bloqueadas
+            const blockedList = JSON.parse(localStorage.getItem('blocked_' + this.user.id) || '[]');
+            
             const snap = await getDocs(collection(db, "usuarios"));
             grid.innerHTML = "";
             snap.forEach(d => {
                 const p = d.data();
                 if(p.id === this.user.id) return;
+                
+                // NOVO: Não mostra pessoas bloqueadas
+                if(blockedList.includes(p.id)) return;
+                
                 grid.innerHTML += `
-                    <div class="card" onclick="app.openChat('${p.id}', '${p.nome}')">
-                        <img src="${p.foto || 'https://via.placeholder.com/150'}">
-                        <div class="btn-bumer">🪃</div>
-                        <div class="card-info"><b>${p.nome}</b></div>
+                    <div class="card">
+                        <div class="btn-remover" onclick="app.removerPessoa('${p.id}', event)">✖</div>
+                        <div onclick="app.openChat('${p.id}', '${p.nome}')">
+                            <img src="${p.foto || 'https://via.placeholder.com/150'}">
+                            <div class="btn-bumer">🪃</div>
+                            <div class="card-info"><b>${p.nome}</b></div>
+                        </div>
                     </div>`;
             });
+            
+            if(grid.innerHTML === "") {
+                grid.innerHTML = "<p style='text-align:center; color:#999; padding:40px;'>Nenhuma pessoa disponível no momento</p>";
+            }
+        },
+
+        // NOVO: Função para remover/bloquear pessoa
+        removerPessoa(userId, event) {
+            event.stopPropagation(); // Impede que abra o chat
+            
+            if(confirm('Deseja remover esta pessoa do seu radar?')) {
+                // Salva na lista de bloqueados
+                const blockedList = JSON.parse(localStorage.getItem('blocked_' + this.user.id) || '[]');
+                if(!blockedList.includes(userId)) {
+                    blockedList.push(userId);
+                    localStorage.setItem('blocked_' + this.user.id, JSON.stringify(blockedList));
+                }
+                
+                // Recarrega o radar
+                this.loadRadar();
+                alert('Pessoa removida do seu radar!');
+            }
         },
 
         openChat(id, nome) {
             this.currChatId = id;
+            this.lastMessageCount = 0; // NOVO: Reseta contador
             document.getElementById('cn').textContent = nome;
             this.go('s-chat');
             this.listen();
@@ -166,20 +219,32 @@
             const chatId = [this.user.id, this.currChatId].sort().join("_");
             const q = query(collection(db, "chats", chatId, "msgs"), orderBy("t", "asc"));
             
+            let isFirstLoad = true; // NOVO: Controla primeira carga
+            
             this.unsubscribe = onSnapshot(q, (s) => {
                 const el = document.getElementById('ms');
+                const currentScreen = document.querySelector('.screen.active').id;
                 
-                // Lógica para vibrar e tocar som apenas em mensagens NOVAS e RECEBIDAS
-                s.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const m = change.doc.data();
-                        // Se a mensagem não é minha, vibra e toca som
-                        if (m.sid !== this.user.id) {
-                            this.alertar();
-                        }
+                // NOVO: Detecta mensagens novas recebidas
+                const newMessages = [];
+                s.forEach(d => {
+                    const m = d.data();
+                    if (m.sid !== this.user.id) { // Mensagem recebida
+                        newMessages.push(m);
                     }
                 });
-
+                
+                // NOVO: Notifica apenas se:
+                // 1. Não é a primeira carga
+                // 2. Tem mensagens novas
+                // 3. Está fora da tela de chat OU está na tela mas recebeu mensagem nova
+                if (!isFirstLoad && newMessages.length > this.lastMessageCount) {
+                    this.notificar();
+                }
+                
+                this.lastMessageCount = newMessages.length;
+                isFirstLoad = false;
+                
                 el.innerHTML = "";
                 s.forEach(d => {
                     const m = d.data();
@@ -203,6 +268,8 @@
 
         async upPhoto(e) {
             const file = e.target.files[0];
+            if(!file) return;
+            
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 const img = ev.target.result;
@@ -210,6 +277,7 @@
                 this.user.foto = img;
                 localStorage.setItem('bumer_user', JSON.stringify(this.user));
                 this.loadPerfil();
+                alert('Foto atualizada!');
             };
             reader.readAsDataURL(file);
         },
@@ -222,11 +290,24 @@
         go(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if (id === 's-radar') this.loadRadar();
-            if (id === 's-perfil') this.loadPerfil();
+            
+            // Atualiza navegação
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            if (id === 's-radar') {
+                this.loadRadar();
+            }
+            if (id === 's-perfil') {
+                this.loadPerfil();
+            }
         },
 
-        sair() { localStorage.clear(); location.reload(); }
+        sair() { 
+            if(confirm('Deseja sair da conta?')) {
+                localStorage.clear(); 
+                location.reload(); 
+            }
+        }
     };
 
     window.onload = () => app.init();
